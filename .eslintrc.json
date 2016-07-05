@@ -7,6 +7,9 @@
     "browser": true,
     "node": true
   },
+  "globals": {
+    "io": true
+  },
   "parser": "babel-eslint",
   "extends": "eslint:recommended",
   "rules": {

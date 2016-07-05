@@ -1,4 +1,16 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-ReactDOM.render(<h1>Test 3</h1>, document.getElementById('root'));
+var App = React.createClass({
+  componentDidMount: function() {
+    var socket = io();
+    socket.on('connect', function() {
+      console.log('connected');
+    });
+  },
+  render: function() {
+    return <h1>Test</h1>;
+  }
+});
+
+ReactDOM.render(<App />, document.getElementById('root'));
