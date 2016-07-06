@@ -37,7 +37,21 @@ Below is a reference to all WebSockets events that you will be listening for and
 	* _Will emit_ back with any error messages for the client
 
 
+Remember: all WebSockets events are received like the following:
 
+```
+this.socket.on('eventName', function(dataFromEvent) {
+	// Do something with dataFromEvent
+})
+```
+
+and all WebSockets events are sent like the following:
+
+```
+this.socket.emit('eventName', 'dataToSend');
+```
+
+Note that we already handled connections for you and stored the socket object on `this` - the root `<App />` component.
 
 ## Part 1: Chat component
 
