@@ -3,7 +3,9 @@ var ReactDOM = require('react-dom');
 
 var App = React.createClass({
   getInitialState: function() {
-    socket: io()
+    return {
+      socket: io()
+    }
     // YOUR CODE HERE (1)
   },
   componentDidMount: function() {
