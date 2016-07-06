@@ -67,23 +67,34 @@ var ChatRoom = React.createClass({
   },
   componentDidMount: function(){
     this.props.socket.on('message', function(message){
+      console.log('socket on')
       alert(message)
       //this.state.messages(message)
       this.setState({
-      messages: this.state.messages.concat({message})
+      messages: this.state.messages.concat(message)
     })
     }.bind(this))
   },
-  componentWillReceiveProps: function(){
+  componentWillReceiveProps: function(nextProps){
+    if(this.props.name!==nextProps){
+      this.props.socket.emit('room',nextProps)
+      this.setState({
+        message: ""
+        messages: [],
+        this.props.name: nextProps //not definite on this part
+       })
+    }
 
   }.bind(this),
   submit: function(){
     //emit to other users
+    //io.sockets.in('feed_1').emit('comment', data);
     this.props.socket.emit('message',this.state.message)
+    //this.props.socket.emit('message',this.state.message)
     //set state on viewing users
     this.setState({
       message: "",
-      messages: this.state.messages.concat({user: this.props.username, text: this.state.message})
+      messages: this.state.messages.concat({username: this.props.username, content: this.state.message})
     })
     //this.render()
   },
@@ -96,7 +107,8 @@ var ChatRoom = React.createClass({
   render: function(){
     return <div>
     {this.state.messages.map(function(msg){
-      return <li>{msg}</li>
+      return <li><p>User: {msg.username}</p>
+                    <p> Content: {msg.content}</p></li>
     })}
     <input type="text" rows="5" value={this.state.message} onChange={this.text}></input>
     <button onClick={this.submit}>Send Message</button>
