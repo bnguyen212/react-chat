@@ -85,10 +85,25 @@ Next, create a component called `<ChatRoom />` that handles all the logic for se
 
 Now, use the lifecycle methods you learned to change state and the display of the `<ChatRoom />` over time. You may try to design these yourself, or you can follow the spec below:
 
+* `getInitialState` (called before a component gets rendered to set its state object)
+	* Return an object with the following:
+		* A property (suggestion: `message`) representing a message that the user is typing - we will use this later, but for now, set it to empty string!
+		* A property (suggestion: `messages`) representing all messages sent and received in the room - we will also use this later, but for now, it could be an empty array!
 * `componentDidMount` (called right before a component "mounts" or gets rendered)
-	* On `componentDidMount`, 
+	* On `componentDidMount`, set your event handlers for displaying messages using `this.props.socket` - the socket object that you passed in as a property to the `<ChatRoom />` component. Handle this the same way we attached event handlers for `connect` and `errorMessage` events above, but call `.on` on `this.props.socket` instead. Your event handlers should call `this.setState` and update an array of message objects that you are storing.
+	* _Tip:_ Try `alert()`ing your messages before you create the rest of your `<ChatRoom />` component to test that your socket event handler is working properly. You can send a message by emitting!
 * `componentWillReceiveProps` (called when receiving new props - i.e., a change of the `name` prop passed in from `<App />`)
+	* On `componentWillReceiveProps`, you want to check if 
 * `render` (called to display the component)
+	* On `render`, you will be handling the display of both messages and a text input to send messages through. Below are the basics that you want to handle:
+		* An array of message elements on the page that are created through the array of message objects that you stored earlier - you may choose to display these as list items, table rows, or paragraphs.
+		* A form element that contains the following:
+			* A text input element with an `onChange` property that **takes a function that you create** to update the property of `state` that you set as an empty string in `getInitialState` (representing a message that the user is typing). This text input element should also have a `value` property of that same `state` property.
+			* A submit input element or button that says "Send" to submit the form it is in
+		* The form element should also be given an `onSubmit` property that **takes a function that you create** to clear the property of state we used for the message that the user is typing (setting it to empty string) and **emit** a `message` event as specified in **Step 0: A WebSockets Reference**. This function should also update the messages array in your state with the message you just sent, since we will not receive `message` events for messages that we sent.
+		
+> ⚠️ **Warning:** Do not use `this.state.messages.push` (or the equivalent for the array that is storing your messages) to put new messages in your state. Remember, we always call `setState` to modify state rather than changing `this.state` itself. Instead of pushing directly, you could push to a temporary array and then set the temporary array to the new `messages` inside of `setState` or use [`.concat(/* an item you want to put in */)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) to return you an array with a new item at the end.
+			
 
 
 ## Part 2: Multi-room chat - `client/index.js`
