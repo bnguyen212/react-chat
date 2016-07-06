@@ -2,16 +2,19 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 var App = React.createClass({
+  getInitialState: function() {
+    socket: io(),
+    // YOUR CODE HERE
+  },
   componentDidMount: function() {
-    this.socket = io();
 
     // WebSockets Receiving Event Handlers
-    this.socket.on('connect', function() {
+    this.state.socket.on('connect', function() {
       console.log('connected');
       // YOUR CODE HERE
     }.bind(this));
-    
-    this.socket.on('errorMessage', function(message) {
+
+    this.state.socket.on('errorMessage', function(message) {
       // YOUR CODE HERE
     }.bind(this));
 
