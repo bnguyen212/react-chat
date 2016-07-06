@@ -76,16 +76,15 @@ var ChatRoom = React.createClass({
     }.bind(this))
   },
   componentWillReceiveProps: function(nextProps){
-    if(this.props.name!==nextProps){
-      this.props.socket.emit('room',nextProps)
+    if(this.props.name!==nextProps.name){
+      this.props.socket.emit('room',nextProps.name)
       this.setState({
-        message: ""
-        messages: [],
-        this.props.name: nextProps //not definite on this part
+        message: "",
+        messages: []
        })
     }
 
-  }.bind(this),
+  },
   submit: function(){
     //emit to other users
     //io.sockets.in('feed_1').emit('comment', data);
