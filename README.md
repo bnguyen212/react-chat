@@ -137,6 +137,7 @@ That's all the restructuring we need! We handled potential changes to `this.prop
 Now, it's up to you to design this component from the ground-up using the below spec of props and lifecycle methods. 
 
 **Props**
+
 Note that all of these props are passed in from the `<App />` level, when we render a `<ChatRoomSelector />` element in the `render` function of the `App` class.
 
 * `rooms` - pass in `this.state.rooms`: all of the rooms that we want this selector to display
