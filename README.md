@@ -127,7 +127,9 @@ Because we are dealing with multiple rooms now, we will have to replace our butt
 
 Before doing so, however, change the property of `roomName` in the `getInitialState` of the top-level `<App />` component to the name of the **default room to join** (the name of the first tab) instead of "No room selected!"
 
-Next, move the emitting of the `room` event from the `join` function into the callback function of the `connect` event, and emit this event with `this.state.roomName` instead. This will cause your application to connect to the default room as soon as it connects. **Make sure you are `prompt()`ing for and emitting a `username` before you emit a `room` event.**
+Next, add another property to the return object of `getInitialState` called `rooms` that is an array of all room names that you want to display, i.e. `["Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"]`.
+
+Last thing: move the emitting of the `room` event from the `join` function into the callback function of the `connect` event, and emit this event with `this.state.roomName` instead. This will cause your application to connect to the default room as soon as it connects. **Make sure you are `prompt()`ing for and emitting a `username` before you emit a `room` event.**
 
 That's all the restructuring we need! We handled potential changes to `this.props.name` on the `<ChatRoom />` level in the last step, so now, changes to `this.state.roomName` on the `<App />` level should emit a new `room` event and update state accordingly.
 
@@ -135,16 +137,19 @@ That's all the restructuring we need! We handled potential changes to `this.prop
 Now, it's up to you to design this component from the ground-up using the below spec of props and lifecycle methods. 
 
 **Props**
+Note that all of these props are passed in from the `<App />` level, when we render a `<ChatRoomSelector />` element in the `render` function of the `App` class.
 
+* `rooms` - pass in `this.state.rooms`: all of the rooms that we want this selector to display
+* `name` - pass in `this.state.roomName`: the room that we currently have selected (defaults to the first!)
 * `onSwitch` - pass in `this.join`: we will set up `<ChatRoomSelector />` such that `this.join` (referred to as `this.props.onSwitch` inside our `<ChatRoomSelector />` class) is called with the name of the room we want to join.
 
 **Methods**
 
 * `handleClick` (**Your method**) - this method should take a parameter for the name of the room that the tab represents and call `this.props.onSwitch` with that name
 * `render` (**React Lifecycle method**) - this method will render the tab component as follows:
-	* Use list item elements (`<li>`) to represent each tab representing a room. Refer to [Bootstrap documentation on the `nav-tabs` class](http://getbootstrap.com/components/#nav-tabs) for tips on styling these tabs nicely.
-		* 
-	* For each of your list item elements, add an `onClick` property 
+	* We will use list item elements (`<li>`) to represent each tab representing a room. Refer to [Bootstrap documentation on the `nav-tabs` class](http://getbootstrap.com/components/#nav-tabs) for tips on styling these tabs nicely. 
+	* Loop over (or map) `this.props.rooms` and create an array of `<li>` elements for each one, sticking them inside of a `<ul>` at the end. For Bootstrap `nav-tabs`, add a `className="active"` if the current room you are at when looping through or mapping is equal to `this.props.name` (the current room).
+	* For each of your list item elements, add an `onClick` property that is equal to a bound function of `this.handleClick`, setting the `this` context to `this` and passing in the room name as its sole argument. That will look something like: `onClick={this.handleClick.bind(this, /* the room name */)}`
 
 ## Challenge: "User is typing" 🏆
 
