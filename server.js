@@ -38,6 +38,9 @@ io.on('connection', function (socket) {
     if (!requestedRoom) {
       return socket.emit('errorMessage', 'No room!');
     }
+    if (socket.room) {
+      socket.leave(socket.room);
+    }
     socket.room = requestedRoom;
     socket.join(requestedRoom, function() {
       socket.to(requestedRoom).emit('message', {
