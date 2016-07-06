@@ -61,6 +61,8 @@ this.socket.emit('eventName', 'dataToSend');
 Note that we already handled connections for you and stored the socket object on `this.state` - the root state of the `<App />` component.
 
 ## Part 1: Chat component - `client/index.js`
+			
+> **Note:** After completing (and while completing) Step 1, you should be testing your application. Use multiple browser tabs to attempt to send and receive messages between your tabs!
 
 For Part 1, you will be working with one chat room, sending and receiving messages from a group of users that are connected to a single room. The end result of **Part 1** should look something like the following:
 
@@ -113,8 +115,6 @@ Now, use the lifecycle methods you learned to change state and the display of th
 		* _Tip:_ You can get the username of the current user through the `username` property of the socket object we set earlier, available through `this.props.socket.username`!
 		
 > ⚠️ **Warning:** Do not use `this.state.messages.push` (or the equivalent for the array that is storing your messages) to put new messages in your state. Remember, we always call `setState` to modify state rather than changing `this.state` itself. Instead of pushing directly, you could push to a temporary array and then set the temporary array to the new `messages` inside of `setState` or use [`.concat(/* an item you want to put in */)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) to return you an array with a new item at the end.
-			
-
 
 ## Part 2: Multi-room chat - `client/index.js`
 
