@@ -91,7 +91,7 @@ Now, use the lifecycle methods you learned to change state and the display of th
 		* A property (suggestion: `message`) representing a message that the user is typing - we will use this later, but for now, set it to empty string!
 		* A property (suggestion: `messages`) representing all messages sent and received in the room - we will also use this later, but for now, it could be an empty array!
 * `componentDidMount` (called right before a component "mounts" or gets rendered)
-	* On `componentDidMount`, set your event handlers for displaying messages using `this.props.socket` - the socket object that you passed in as a property to the `<ChatRoom />` component. Handle this the same way we attached event handlers for `connect` and `errorMessage` events above, but call `.on` on `this.props.socket` instead. Your event handlers should call `this.setState` and update an array of message objects that you are storing.
+	* On `componentDidMount`, set your event handlers for displaying messages using `this.props.socket` - the socket object that you passed in as a property to the `<ChatRoom />` component. Refer to **Step 0: A WebSockets Reference** for a refresher on setting WebSockets event handlers. Your event handlers should call `this.setState` and update an array of message objects that you are storing.
 	* _Tip:_ Try `alert()`ing your messages before you create the rest of your `<ChatRoom />` component to test that your socket event handler is working properly. You can send a message by emitting!
 * `componentWillReceiveProps` (called when receiving new props - i.e., a change of the `name` prop passed in from `<App />`)
 	* On `componentWillReceiveProps`, you want to check if there has been a change to `this.props.name` - this means that we will have switched rooms (in this part, `componentWillReceiveProps` will have little functional effect since we only have one room, but it will be used in the next step).
@@ -106,7 +106,10 @@ Now, use the lifecycle methods you learned to change state and the display of th
 		* A form element that contains the following:
 			* A text input element with an `onChange` property that **takes a function that you create** to update the property of `state` that you set as an empty string in `getInitialState` (representing a message that the user is typing). This text input element should also have a `value` property of that same `state` property.
 			* A submit input element or button that says "Send" to submit the form it is in
-		* The form element should also be given an `onSubmit` property that **takes a function that you create** to clear the property of state we used for the message that the user is typing (setting it to empty string) and **emit** a `message` event as specified in **Step 0: A WebSockets Reference**. This function should also update the messages array in your state with the message you just sent, since we will not receive `message` events for messages that we sent.
+	* The form element should also be given an `onSubmit` property that **takes a function that you create** to clear the property of state we used for the message that the user is typing (setting it to empty string) and **emit** a `message` event as specified in **Step 0: A WebSockets Reference**. This **function that you create** should do the following:
+		* Take an event object (`e`, `evt`, whatever you want to call it) as a parameter
+		* Call `preventDefault` on the event object you take as a parameter
+		* Update the messages array in your state with the message you just sent, since we will not receive `message` events for messages that we sent.
 		
 > ⚠️ **Warning:** Do not use `this.state.messages.push` (or the equivalent for the array that is storing your messages) to put new messages in your state. Remember, we always call `setState` to modify state rather than changing `this.state` itself. Instead of pushing directly, you could push to a temporary array and then set the temporary array to the new `messages` inside of `setState` or use [`.concat(/* an item you want to put in */)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) to return you an array with a new item at the end.
 			
@@ -128,13 +131,29 @@ Next, move the emitting of the `room` event from the `join` function into the ca
 
 That's all the restructuring we need! We handled potential changes to `this.props.name` on the `<ChatRoom />` level in the last step, so now, changes to `this.state.roomName` on the `<App />` level should emit a new `room` event and update state accordingly.
 
-### Lifecycle spec for `<ChatRoomSelector />` component - `client/index.js`
-Now, it's up to you to design this component from the ground-up using the below Lifecycle spec. 
+### Spec for `<ChatRoomSelector />` component - `client/index.js`
+Now, it's up to you to design this component from the ground-up using the below spec of props and lifecycle methods. 
 
-- Add required `name` prop for `ChatRoom`
-- `componentDidMount()` on ChatRoom join channel
-- `componentWillUnmount()` disconnects/leaves channel
+**Props**
 
-## Challenge: "User is typing"
+* `onSwitch` - pass in `this.join`: we will set up `<ChatRoomSelector />` such that `this.join` (referred to as `this.props.onSwitch` inside our `<ChatRoomSelector />` class) is called with the name of the room we want to join.
+
+**Methods**
+
+* `handleClick` (**Your method**) - this method should take a parameter for the name of the room that the tab represents and call `this.props.onSwitch` with that name
+* `render` (**React Lifecycle method**) - this method will render the tab component as follows:
+	* Use list item elements (`<li>`) to represent each tab representing a room. Refer to [Bootstrap documentation on the `nav-tabs` class](http://getbootstrap.com/components/#nav-tabs) for tips on styling these tabs nicely.
+		* 
+	* For each of your list item elements, add an `onClick` property 
+
+## Challenge: "User is typing" 🏆
+
+Create new events in `server.js` called `typing` and `stop typing` that handles received `typing` and `stop typing` events and emits the same events to the rest of the room. 
+
+You will also need to change your `client/index.js` to emit a `typing` event when the user is typing (or when `this.state.message` is not empty!) and a `stop typing` event when they are not! Handle the display logic accordingly by updating the `state` of your `<ChatRoom />` to include an array of typing users and rendering with `<span>` items of each typing user with "_username_ is typing..."
+
+The end result will look like the following:
 
 <img src="img/chat3.png" width="600">
+
+Good luck!
