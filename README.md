@@ -69,7 +69,7 @@ For Part 1, you will be working with one chat room, sending and receiving messag
 Start by implementing some basics that we have given you function definitions for (replace `YOUR CODE HERE`): 
 
 1. Create a property on the return object of `getInitialState` called `roomName` with a default name of a room - because they have not yet selected a room, "No room selected!" is fine.
-2. Get and store a username from the user in the callback of the socket's `connect` event - you may use `prompt()` to get input from the user in an easy way! 
+2. Get and store a username from the user in the callback of the socket's `connect` event - you may use `prompt()` to get input from the user in an easy way! Store your username on a property of your socket object at `this.state.socket` (like `this.state.socket.username`) so that you can access the username easily in your `<ChatRoom />` component later.
 3. Determine how you will handle errors by filling in the callback function of the socket's `errorMessage` event. `alert()`ing potential errors is sufficient here.
 
 Next, we'll write our logic for sending and receiving messages in a `<ChatRoom />` React component. Notice in **`client/index.js`** that there is already a button setup with an `onClick` event of the `join` function, passing in "Party Place." 
@@ -109,7 +109,8 @@ Now, use the lifecycle methods you learned to change state and the display of th
 	* The form element should also be given an `onSubmit` property that **takes a function that you create** to clear the property of state we used for the message that the user is typing (setting it to empty string) and **emit** a `message` event as specified in **Step 0: A WebSockets Reference**. This **function that you create** should do the following:
 		* Take an event object (`e`, `evt`, whatever you want to call it) as a parameter
 		* Call `preventDefault` on the event object you take as a parameter
-		* Update the messages array in your state with the message you just sent, since we will not receive `message` events for messages that we sent.
+		* Update the messages array in your state with the message you just sent, since we will not receive `message` events for messages that we sent. 
+		* _Tip:_ You can get the username of the current user through the `username` property of the socket object we set earlier, available through `this.props.socket.username`!
 		
 > ⚠️ **Warning:** Do not use `this.state.messages.push` (or the equivalent for the array that is storing your messages) to put new messages in your state. Remember, we always call `setState` to modify state rather than changing `this.state` itself. Instead of pushing directly, you could push to a temporary array and then set the temporary array to the new `messages` inside of `setState` or use [`.concat(/* an item you want to put in */)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) to return you an array with a new item at the end.
 			
