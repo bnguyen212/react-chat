@@ -50,6 +50,9 @@ io.on('connection', function (socket) {
     });
   });
 
+  socket.on('typing', function(user) {
+    socket.broadcast.emit('typing', user)
+  })
   socket.on('message', function(message) {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');

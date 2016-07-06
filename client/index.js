@@ -33,7 +33,6 @@ var App = React.createClass({
     this.state.socket.emit('room', room)
   },
   render: function() {
-
     return (
       <div>
         <h1>React Chat</h1>
@@ -50,6 +49,7 @@ var ChatRoom = React.createClass({
     return {
       'message': '',
       'messages': [],
+      'active': {},
     }
   },
   componentDidMount: function() {
@@ -58,6 +58,13 @@ var ChatRoom = React.createClass({
 
     s.on('message', function(message) {
       this.setState({'messages': this.state.messages.concat([message])})
+    }.bind(this))
+
+    s.on('typing', function(message) {
+      console.log(message)
+      var newActive = this.state.active
+      newActive[message.user] = message.typing
+      this.setState({'active' : newActive})
     }.bind(this))
   },
   componentWillReceiveProps: function(next) {
@@ -72,14 +79,16 @@ var ChatRoom = React.createClass({
     e.preventDefault()
     var msg = {
       'username' : this.props.username,
-      'content' : this.state.message
+      'content' : this.state.message,
     }
     this.setState({'message' : ''})
     this.props.socket.emit('message', msg.content)
     this.setState({'messages' : [msg].concat(this.state.messages)})
+    this.props.socket.emit('typing',{'user':this.props.username, 'typing': false})
   },
   doesathing: function(e) {
     this.setState({'message' : e.target.value})
+    this.props.socket.emit('typing',{'user':this.props.username, 'typing': this.state.message.length>1})
   },
   render: function() {
     if (!this.props.room || !this.props.username) return <div/>
@@ -90,6 +99,17 @@ var ChatRoom = React.createClass({
           <button className="btn btn-default" onClick={this.send}>Submit</button>
         </div>
       </form>
+      <div className="typing">
+        <ul>
+        {Object.keys(this.state.active).map(function(elt,index) {
+          if (this.state.active[elt]) {
+            return <li key={elt+index}>
+              <p>{elt+' '}is typing</p>
+            </li>
+          } 
+        }, this)}
+        </ul>
+      </div>
       <div className="message-container">
         {this.state.messages.map(function(elt, index) {
           return <div className="message" key={index}>

@@ -19,3 +19,6 @@ input {
 	display: flex;
 	align-items: baseline;
 }
+ul {
+	list-style: none;
+}
