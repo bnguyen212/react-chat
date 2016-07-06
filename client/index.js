@@ -27,14 +27,14 @@ var App = React.createClass({
     this.setState({
       roomName: room
     })
-   this.state.socket.emit('room', this.state.roomName)
+   //this.state.socket.emit('room', this.state.roomName)
   },
   render: function() {
     return (
       <div>
         <h1>React Chat</h1>
         <button className="btn btn-default" onClick={this.join.bind(this, "Party Place")}>
-          Join the Party Place
+          join party place chat
         </button>
         <ChatRoom username={this.state.username} socket={this.state.socket} roomName={this.state.roomName}/>
       </div>
@@ -50,11 +50,11 @@ var ChatRoom = React.createClass({
     }
   },
   componentDidMount: function() {
-    this.props.socket.on('messages', function(messages) {
+    this.props.socket.on('message', function(messages) {
       this.setState({
-        messages: messages
+        messages: this.state.messages.concat(messages)
       })
-    } )
+    }.bind(this))
   },
   componentWillReceiveProps: function(nextProps) {
     if (nextProps.roomName !== this.props.roomName) {
@@ -65,13 +65,35 @@ var ChatRoom = React.createClass({
       })
     }
   },
+  change: function(event) {
+    this.setState({
+      message: event.target.value
+    });
+  },
+  submit: function(event) {
+    event.preventDefault();
+    this.props.socket.emit('message', this.state.message);
+    this.setState({
+      messages: this.state.messages.concat({
+         username: this.props.username,
+          content: this.state.message
+      }),
+      message: ''
+    })
+  },
   render: function() {
     // this.props.socket,
     // this.props.roomName
-    
-    return this.state.message.map(function(message) {
-      
+    var mappedMessages = this.state.messages.map(function(message) {
+      return <p>{message.username}: {message.content}</p>
     });
+    return (
+      <div>
+      <div>{mappedMessages}</div>
+      <input placeholder="write a message" className="form-control" type="text" value={this.state.message} onChange={this.change}/>
+      <button className="btn btn-default" onClick={this.submit}>send message</button> 
+      </div>
+    )
   }
 })
 
