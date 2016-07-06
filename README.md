@@ -85,6 +85,7 @@ Next, create a component called `<ChatRoom />` that handles all the logic for se
 
 Now, use the lifecycle methods you learned to change state and the display of the `<ChatRoom />` over time. You may try to design these yourself, or you can follow the spec below:
 
+### Lifecycle spec for `<ChatRoom />` component - `client/index.js`
 * `getInitialState` (called before a component gets rendered to set its state object)
 	* Return an object with the following:
 		* A property (suggestion: `message`) representing a message that the user is typing - we will use this later, but for now, set it to empty string!
@@ -93,7 +94,10 @@ Now, use the lifecycle methods you learned to change state and the display of th
 	* On `componentDidMount`, set your event handlers for displaying messages using `this.props.socket` - the socket object that you passed in as a property to the `<ChatRoom />` component. Handle this the same way we attached event handlers for `connect` and `errorMessage` events above, but call `.on` on `this.props.socket` instead. Your event handlers should call `this.setState` and update an array of message objects that you are storing.
 	* _Tip:_ Try `alert()`ing your messages before you create the rest of your `<ChatRoom />` component to test that your socket event handler is working properly. You can send a message by emitting!
 * `componentWillReceiveProps` (called when receiving new props - i.e., a change of the `name` prop passed in from `<App />`)
-	* On `componentWillReceiveProps`, you want to check if 
+	* On `componentWillReceiveProps`, you want to check if there has been a change to `this.props.name` - this means that we will have switched rooms (in this part, `componentWillReceiveProps` will have little functional effect since we only have one room, but it will be used in the next step).
+	* Remember that `componentWillReceiveProps` takes a parameter (`nextProps`) that represents the new props that have been passed into `<ChatRoom />`. Compare `nextProps.name` (the new name prop) to `this.props.name` (the old name prop) and if they are different, call `setState` with an object that sets your `messages` array to empty again and your `name` to the new name prop.
+	
+	<sub>**Read more about `componentWillReceiveProps` with examples and documention [here](https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops)**.</sub>
 * `render` (called to display the component)
 	* On `render`, you will be handling the display of both messages and a text input to send messages through. Below are the basics that you want to handle:
 		* An array of message elements on the page that are created through the array of message objects that you stored earlier - you may choose to display these as list items, table rows, or paragraphs.
@@ -108,9 +112,16 @@ Now, use the lifecycle methods you learned to change state and the display of th
 
 ## Part 2: Multi-room chat - `client/index.js`
 
+Next, we'll implement multiple rooms with a separate component (on the same level as `<ChatRoom />`) called `<ChatRoomSelector />` that will allow us to change which room we are currently chatting with. The end result will look like the following:
+
 <img src="img/chat2.png" width="600">
 
-<ChatRoomSelector />
+This time, it's up to you to design this component from the ground-up using the below Lifecycle spec. 
+
+### Lifecycle spec for `<ChatRoomSelector />` component - `client/index.js`
+
+
+
 
 - Add required `name` prop for `ChatRoom`
 - `componentDidMount()` on ChatRoom join channel
