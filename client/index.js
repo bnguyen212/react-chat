@@ -5,7 +5,8 @@ var App = React.createClass({
   getInitialState: function() {
     return {
       socket: io(),
-      // YOUR CODE HERE (1)
+      roomName: "No room selected",
+      username:  "No username"
     }   
   },
   componentDidMount: function() {
@@ -13,17 +14,36 @@ var App = React.createClass({
     // WebSockets Receiving Event Handlers
     this.state.socket.on('connect', function() {
       console.log('connected');
-      // YOUR CODE HERE (2)
+      // save username within socket state for later use
+      this.state.socket.username=prompt("What is your username?")
+      this.setState({
+        username: this.state.socket.username
+      })
+      this.state.socket.emit('username', this.state.username)
     }.bind(this));
 
     this.state.socket.on('errorMessage', function(message) {
-      // YOUR CODE HERE (3)
+      if(message==="No username!"){
+        this.state.socket.username=prompt("What is your username?")
+        this.state.socket.emit('username', this.state.socket.username)
+      }
     }.bind(this));
 
   },
   join: function(room) {
     // room is called with "Party Place"
+    //console.log(this)
     console.log(room);
+    this.setState({
+      roomName: room
+    })
+    
+    //COME BACK FOR ROOM ERROR MESSAGES
+    // this.state.socket.on('room',function(room){
+    //   this.state.socket.room=room;
+    //   if(this.state.socket.room)
+    // })
+    // this.state.socket.emit('room',this.state.roomName)
   },
   render: function() {
     return (
@@ -32,9 +52,56 @@ var App = React.createClass({
         <button className="btn btn-default" onClick={this.join.bind(this, "Party Place")}>
           Join the Party Place
         </button>
+        <ChatRoom username={this.state.username} socket={this.state.socket} name={this.state.roomName}/>
       </div>
     );
   }
 });
+
+var ChatRoom = React.createClass({
+  getInitialState: function(){
+    return{
+      message: "",
+      messages: []
+    }
+  },
+  componentDidMount: function(){
+    this.props.socket.on('message', function(message){
+      alert(message)
+      //this.state.messages(message)
+      this.setState({
+      messages: this.state.messages.concat({message})
+    })
+    }.bind(this))
+  },
+  componentWillReceiveProps: function(){
+
+  }.bind(this),
+  submit: function(){
+    //emit to other users
+    this.props.socket.emit('message',this.state.message)
+    //set state on viewing users
+    this.setState({
+      message: "",
+      messages: this.state.messages.concat({user: this.props.username, text: this.state.message})
+    })
+    //this.render()
+  },
+  text: function(event){
+    //console.log(event.target.value)
+    this.setState({
+      message: event.target.value
+    })
+  },
+  render: function(){
+    return <div>
+    {this.state.messages.map(function(msg){
+      return <li>{msg}</li>
+    })}
+    <input type="text" rows="5" value={this.state.message} onChange={this.text}></input>
+    <button onClick={this.submit}>Send Message</button>
+    </div>
+  }
+})
 
 ReactDOM.render(<App />, document.getElementById('root'));
