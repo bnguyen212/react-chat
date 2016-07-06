@@ -28,7 +28,7 @@ Below is a reference to all WebSockets events that you will be listening for and
 	* _Will emit_ an **Object** (important!) that has a property `username` indicating who the message is coming from and property `content` containing the message's text contents
 		* **Example:**
 		
-		```
+		```javascript
 		{
 			"username": "Ethan",
 			"content": "Did you commit today?"
@@ -46,7 +46,7 @@ Below is a reference to all WebSockets events that you will be listening for and
 
 Remember: all WebSockets events are received like the following:
 
-```
+```javascript
 this.socket.on('eventName', function(dataFromEvent) {
 	// Do something with dataFromEvent
 })
@@ -54,7 +54,7 @@ this.socket.on('eventName', function(dataFromEvent) {
 
 and all WebSockets events are sent like the following:
 
-```
+```javascript
 this.socket.emit('eventName', 'dataToSend');
 ```
 
