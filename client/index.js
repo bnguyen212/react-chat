@@ -10,11 +10,7 @@ var App = React.createClass({
       console.log('connected');
       // YOUR CODE HERE
     }.bind(this));
-
-    this.socket.on('message', function(message) {
-      // YOUR CODE HERE
-    }.bind(this));
-
+    
     this.socket.on('errorMessage', function(message) {
       // YOUR CODE HERE
     }.bind(this));
