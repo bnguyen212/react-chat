@@ -69,14 +69,14 @@ For Part 1, you will be working with one chat room, sending and receiving messag
 Start by implementing some basics that we have given you function definitions for (replace `YOUR CODE HERE`): 
 
 1. Create a property on the return object of `getInitialState` called `roomName` with a default name of a room - because they have not yet selected a room, "No room selected!" is fine.
-2. Get and store a username from the user in the callback of the socket's `connect` event - you may use `prompt()` to get input from the user in an easy way!
+2. Get and store a username from the user in the callback of the socket's `connect` event - you may use `prompt()` to get input from the user in an easy way! 
 3. Determine how you will handle errors by filling in the callback function of the socket's `errorMessage` event. `alert()`ing potential errors is sufficient here.
 
 Next, we'll write our logic for sending and receiving messages in a `<ChatRoom />` React component. Notice in **`client/index.js`** that there is already a button setup with an `onClick` event of the `join` function, passing in "Party Place." 
 
 > **Note:** Since we're only dealing with one room at a time for now, calling `join` with only "Party Place" for now is fine - when we design a `<ChatRoomSelector />` component in the next step, we will need to change things.
 
-Change the `join` function so that when it is called, it does not simply log the passed-in room name (`room`), but also calls `setState` to change the room name as a part of the `state` of the top-level `<App />` component - you named this in the first step with `getInitialState` as `roomName`. Remember that we always modify state with the `setState` function!
+Change the `join` function so that when it is called, it does not simply log the passed-in room name (`room`), but also calls `setState` to change the room name as a part of the `state` of the top-level `<App />` component - you named this in the first step with `getInitialState` as `roomName`. Remember that we always modify state with the `setState` function! After setting your state, emit a `room` event with the room name that you just received to enter the "Party Place" room.
 
 Next, create a component called `<ChatRoom />` that handles all the logic for sending and receiving messages in its [component lifecycle](https://facebook.github.io/react/docs/component-specs.html) methods. We will pass two props into `ChatRoom` when we render it:
 
@@ -95,7 +95,9 @@ Now, use the lifecycle methods you learned to change state and the display of th
 	* _Tip:_ Try `alert()`ing your messages before you create the rest of your `<ChatRoom />` component to test that your socket event handler is working properly. You can send a message by emitting!
 * `componentWillReceiveProps` (called when receiving new props - i.e., a change of the `name` prop passed in from `<App />`)
 	* On `componentWillReceiveProps`, you want to check if there has been a change to `this.props.name` - this means that we will have switched rooms (in this part, `componentWillReceiveProps` will have little functional effect since we only have one room, but it will be used in the next step).
-	* Remember that `componentWillReceiveProps` takes a parameter (`nextProps`) that represents the new props that have been passed into `<ChatRoom />`. Compare `nextProps.name` (the new name prop) to `this.props.name` (the old name prop) and if they are different, call `setState` with an object that sets your `messages` array to empty again and your `name` to the new name prop.
+	* Remember that `componentWillReceiveProps` takes a parameter (`nextProps`) that represents the new props that have been passed into `<ChatRoom />`. Compare `nextProps.name` (the new name prop) to `this.props.name` (the old name prop) and if they are different, do the following:
+		* Emit a `room` event with the new name prop (remember that your socket is available at `this.props.socket` inside of `<ChatRoom />`)
+		* Call `setState` with an object that sets your `messages` array to empty again and your `name` to the new name prop
 	
 	<sub>**Read more about `componentWillReceiveProps` with examples and documention [here](https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops)**.</sub>
 * `render` (called to display the component)
@@ -112,16 +114,22 @@ Now, use the lifecycle methods you learned to change state and the display of th
 
 ## Part 2: Multi-room chat - `client/index.js`
 
-Next, we'll implement multiple rooms with a separate component (on the same level as `<ChatRoom />`) called `<ChatRoomSelector />` that will allow us to change which room we are currently chatting with. The end result will look like the following:
+Next, we'll implement multiple rooms with a separate component (on the same level as `<ChatRoom />`) called `<ChatRoomSelector />` that will allow us to change which room we are currently chatting with. Note that you will be hard-coding values for room names. The end result will look like the following:
 
 <img src="img/chat2.png" width="600">
 
-This time, it's up to you to design this component from the ground-up using the below Lifecycle spec. 
+### Restructuring `<App />` a little - `client/index.js`
+
+Because we are dealing with multiple rooms now, we will have to replace our button that calls `this.join` with the name of the only room we have ("Party Place") with a component that we will design below. 
+
+Before doing so, however, change the property of `roomName` in the `getInitialState` of the top-level `<App />` component to the name of the **default room to join** (the name of the first tab) instead of "No room selected!"
+
+Next, move the emitting of the `room` event from the `join` function into the callback function of the `connect` event, and emit this event with `this.state.roomName` instead. This will cause your application to connect to the default room as soon as it connects. **Make sure you are `prompt()`ing for and emitting a `username` before you emit a `room` event.**
+
+That's all the restructuring we need! We handled potential changes to `this.props.name` on the `<ChatRoom />` level in the last step, so now, changes to `this.state.roomName` on the `<App />` level should emit a new `room` event and update state accordingly.
 
 ### Lifecycle spec for `<ChatRoomSelector />` component - `client/index.js`
-
-
-
+Now, it's up to you to design this component from the ground-up using the below Lifecycle spec. 
 
 - Add required `name` prop for `ChatRoom`
 - `componentDidMount()` on ChatRoom join channel
