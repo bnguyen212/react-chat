@@ -54,9 +54,9 @@ io.on('connection', function (socket) {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    socket.to(socket.room).emit('message', {
-      username: socket.username,
-      content: message
+    socket.to(socket.room).emit('message', { //+WE DID SOMETHING HERE ????
+      username: message.username,
+      content: message.content
     });
   })
 });
