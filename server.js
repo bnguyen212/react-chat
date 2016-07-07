@@ -51,6 +51,9 @@ io.on('connection', function (socket) {
   });
 
   socket.on('message', function(message) {
+      console.log(message);
+      console.log(socket.room);
+      console.log(socket.username); 
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
