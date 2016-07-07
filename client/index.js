@@ -1,7 +1,5 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-// var jQuery = require('jQuery');
-// var Bootstrap = require('bootstrap');
 
 var App = React.createClass({
   getInitialState: function() {
@@ -36,6 +34,7 @@ var App = React.createClass({
     this.setState ({
       roomName: room
     })
+    console.log("joined "+room)
   },
   render: function() {
     return (
@@ -106,7 +105,6 @@ var ChatRoom = React.createClass({
 
 var ChatRoomSelector = React.createClass({
   handleClick: function(room) {
-    console.log("lookie: ",room)
     this.props.onSwitch(room)
   },
   render: function() {
