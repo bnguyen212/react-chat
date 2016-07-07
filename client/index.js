@@ -76,7 +76,7 @@ var ChatRoom = React.createClass({
     this.setState({
       messages: this.state.messages.concat({
          username: this.props.username,
-          content: this.state.message
+         content: this.state.message
       }),
       message: ''
     })
@@ -85,7 +85,7 @@ var ChatRoom = React.createClass({
     // this.props.socket,
     // this.props.roomName
     var mappedMessages = this.state.messages.map(function(message) {
-      return <p>{message.username}: {message.content}</p>
+      return <p>{message.username {color: blue}}: {message.content}</p>
     });
     return (
       <div>
