@@ -61,14 +61,27 @@ var ChatRoom = React.createClass({
 })
 
 var ChatRoomSelector = React.createClass({
-  getInitialState: function() {
-
-  },
-  handleClick: function() {
-
+ 
+  handleClick: function(name) {
+    this.props.onSwitch(name);
   },
   render: function() {
-    return
+    var tabArr = [];
+    for(var i = 0; i < this.props.rooms; i++) {
+      if (this.props.room === this.props.rooms[i]) {
+        tabArr.push(<li role="presentation" className="active" onChange={this.handleClick.bind(this, this.props.room)}>{this.props.rooms[i]}</li>)
+      }
+      else {
+        tabArr.push(<li role="presentation" onClick={this.handleClick.bind(this, this.props.room)}>{this.props.rooms[i]}</li>)
+      }
+          }
+    return (
+      <div>
+      <ul className="nav nav-tabs">
+        {tabArr}
+      </ul>
+      </div>
+      )
   }
 })
 
@@ -117,7 +130,7 @@ var App = React.createClass({
         <button className="btn btn-default" onClick={this.join.bind(this, "Party Place")}>
           Join the Party Place
         </button>
-        <ChatRoomSelector rooms={this.state.rooms} room={this.stateRoomName} onSwitch={this.join} />
+        <ChatRoomSelector rooms={this.state.rooms} room={this.state.roomName} onSwitch={this.join} />
         <ChatRoom username={this.state.username} socket={this.state.socket} room={this.state.roomName}></ChatRoom>
       </div>
     );
