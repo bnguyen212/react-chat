@@ -9,6 +9,8 @@ var ChatRoom = React.createClass({
     }
   },
   componentDidMount: function() {
+    console.log('my state')
+    console.log(this.state)
     // var self = this;
     // WebSockets Receiving Event Handlers
     this.props.socket.on('message', function(message) {
@@ -23,11 +25,11 @@ var ChatRoom = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    console.log('componentWillReceiveProps')
-    if(nextProps.name === this.props.name) {
+    console.log('componentWillReceiveProps', nextProps)
+    if(nextProps.name === this.state.roomName) {
       alert('same room')
     } else {
-      this.props.socket.emit('room', nextProps.room);
+      this.props.socket.emit('room', nextProps.name);
       this.setState({
         name: nextProps.name,
         messages: []
@@ -58,8 +60,8 @@ var ChatRoom = React.createClass({
       <div>
       {this.state.messages.map((x) => <p>{x.username}: {x.content}</p>)}
       <form onSubmit={this.submit}>
-        <input type="text" onChange={this.typing} value={this.state.message} placeholder="Enter message if you will" />
-        <input type="submit" value="submit" className = "btn btn-primary"  />
+        <input type="text" onChange={this.typing} value={this.state.message} placeholder="Enter a message" />
+        <input type="submit" className = "btn btn-primary"  />
       </form>
       </div>
     );
@@ -68,35 +70,15 @@ var ChatRoom = React.createClass({
 
 
 var ChatRoomSelector = React.createClass({
-  getInitialState: function() {
-    return {
-      yo: 'hi'
-    }
-  },
-  componentDidMount: function() {
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    console.log('componentWillReceiveProps')
-    if(nextProps.name === this.props.name) {
-      alert('same room')
-    } else {
-      this.props.socket.emit('room', nextProps.room);
-      this.setState({
-        name: nextProps.name,
-        messages: []
-      });
-    }
-  },
-  typing: function(event) {
-  },
-  submit: function(event) {
-
+  handleClick: function(room) {
+    console.log('ROOOMROMOMRO: ', room);
+    this.props.onSwitch(room);
+    console.log('props', this.props);
   },
   render: function() {
     return (
       <div>
-
+      {this.props.rooms.map((x) => <button onClick={this.handleClick.bind(this, x)}>{x}</button>)}
       </div>
     );
   }
@@ -108,7 +90,8 @@ var App = React.createClass({
   getInitialState: function() {
     return {
       socket: io(),
-      roomName: "No room selected!"
+      roomName: "Party Place",
+      rooms: ["Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"]
     }
   },
   componentDidMount: function() {
@@ -118,6 +101,7 @@ var App = React.createClass({
       var username = prompt('Enter username');
       this.state.socket.emit('username', username);
       this.state.socket.username = username;
+      this.state.socket.emit('room', this.state.roomName);
     }.bind(this));
 
     this.state.socket.on('errorMessage', function(message) {
@@ -126,20 +110,24 @@ var App = React.createClass({
 
   },
   join: function(room) {
-    // this.setState({
-    //   roomName: room
-    // })
-    console.log(room);
+    this.setState({
+      roomName: room
+    });
     this.state.socket.emit('room', room);
+    console.log('HOLLA', room);
   },
   render: function() {
     return (
       <div>
         <h1>React Chat</h1>
+
+        <ChatRoomSelector rooms={this.state.rooms} name={this.state.roomName} onSwitch={this.join} />
+
         <button className="btn btn-default" onClick={this.join.bind(this, "Party Place")}>
           Join the Party Place
         </button>
-        <ChatRoom socket={this.state.socket} name={this.state.socket.name} />
+        <ChatRoom socket={this.state.socket} name={this.state.roomName} />
+
       </div>
     );
   }
