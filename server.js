@@ -25,6 +25,7 @@ app.get('/', function(req, res) {
 io.on('connection', function (socket) {
   console.log('connected');
   socket.on('username', function(username) {
+    console.log('hey this is server username' + username)
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
     }
