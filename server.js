@@ -59,6 +59,21 @@ io.on('connection', function (socket) {
       content: message
     });
   })
+
+  socket.on('typing', function() {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('typing', socket.username);
+  })
+
+  socket.on('stopTyping', function() {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('stopTyping', socket.username);
+  });
+
 });
 
 var port = process.env.PORT || 3000;

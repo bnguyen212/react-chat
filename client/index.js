@@ -5,23 +5,42 @@ var ChatRoom = React.createClass({
   getInitialState: function() {
     return {
       message: "",
-      messages: []
+      messages: [],
+      typingUsers: []
     }
   },
   componentDidMount: function() {
     console.log('my state')
     console.log(this.state)
-    // var self = this;
     // WebSockets Receiving Event Handlers
     this.props.socket.on('message', function(message) {
-      console.log('socket is indeed on');
       console.log('message', message);
       var newMessages = this.state.messages.concat(message);
       this.setState({
-        // name: this.props.name,
         messages: newMessages
       })
     }.bind(this));
+
+    this.props.socket.on('typing', function(username){
+      console.log('currently typing');
+      if(this.state.typingUsers.indexOf(username) === -1) {
+        this.setState({
+          typingUsers: this.state.typingUsers.concat(username)
+        })
+        console.log('inside typing', this.state.typingUsers);
+      }}.bind(this));
+
+    this.props.socket.on('stopTyping', function(username) {
+      var someIndex = this.state.typingUsers.indexOf(username);
+      if(someIndex !== -1) {
+        this.setState({
+          typingUsers: [
+            ...this.state.typingUsers.slice(0, someIndex),
+            ...this.state.typingUsers.slice(someIndex + 1)
+          ]
+        });
+      } console.log('stop typing users', this.state.typingUsers)
+    }.bind(this))
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -29,21 +48,29 @@ var ChatRoom = React.createClass({
     if(nextProps.name === this.state.roomName) {
       alert('same room')
     } else {
-      this.props.socket.emit('room', nextProps.name);
       this.setState({
         name: nextProps.name,
         messages: []
       });
+      console.log('MY NAME STATE', this.state);
     }
   },
   typing: function(event) {
-    console.log('event in typing', event);
     this.setState({
       message: event.target.value
-    })
+    });
+
+    if(event.target.value) {
+      this.props.socket.emit('typing');
+    } else {
+      this.props.socket.emit('stopTyping');
+    }
+
   },
+
   submit: function(event) {
     event.preventDefault();
+    this.props.socket.emit('stopTyping');
     this.props.socket.emit('message', this.state.message)
     var newMessageObj = {
       username: this.props.socket.username,
@@ -54,11 +81,17 @@ var ChatRoom = React.createClass({
       message: '',
       messages: newMessages
     })
+    console.log('MY CURRENT STATE', this.state);
   },
   render: function() {
     return (
       <div>
       {this.state.messages.map((x) => <p>{x.username}: {x.content}</p>)}
+
+      <p>
+      {this.state.typingUsers.map((item) => (<span>{item}</span>))} is typing...
+      </p>
+
       <form onSubmit={this.submit}>
         <input type="text" onChange={this.typing} value={this.state.message} placeholder="Enter a message" />
         <input type="submit" className = "btn btn-primary"  />
@@ -78,7 +111,7 @@ var ChatRoomSelector = React.createClass({
   render: function() {
     return (
       <div>
-      {this.props.rooms.map((x) => <button onClick={this.handleClick.bind(this, x)}>{x}</button>)}
+      {this.props.rooms.map((x) => <button onClick={this.handleClick.bind(null, x)}>{x}</button>)}
       </div>
     );
   }
@@ -97,22 +130,21 @@ var App = React.createClass({
   componentDidMount: function() {
     // WebSockets Receiving Event Handlers
     this.state.socket.on('connect', function() {
-      console.log('connected');
       var username = prompt('Enter username');
       this.state.socket.emit('username', username);
       this.state.socket.username = username;
+      // part 2
       this.state.socket.emit('room', this.state.roomName);
     }.bind(this));
-
     this.state.socket.on('errorMessage', function(message) {
       alert(message);
     }.bind(this));
-
   },
   join: function(room) {
-    // this.setState({
-    //   roomName: room
-    // });
+    // potentially problematic
+    this.setState({
+      roomName: room
+    });
     this.state.socket.emit('room', room);
     console.log('HOLLA', room);
   },
@@ -120,12 +152,16 @@ var App = React.createClass({
     return (
       <div>
         <h1>React Chat</h1>
+        <h4>{this.state.roomName}</h4>
 
         <ChatRoomSelector rooms={this.state.rooms} name={this.state.roomName} onSwitch={this.join} />
 
-        <button className="btn btn-default" onClick={this.join.bind(this, "Party Place")}>
-          Join the Party Place
-        </button>
+{// deleted join party room button here
+  // <button className="btn btn-default" onClick={this.join.bind(this, "Party Place")}>
+  //   Join the Party Place
+  // </button>
+}
+
         <ChatRoom socket={this.state.socket} name={this.state.roomName} />
 
       </div>
