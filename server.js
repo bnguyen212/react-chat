@@ -29,9 +29,11 @@ io.on('connection', function (socket) {
       return socket.emit('errorMessage', 'No username!');
     }
     socket.username = String(username);
+
   });
 
   socket.on('room', function(requestedRoom) {
+    console.log('In room');
     if (!socket.username) {
       return socket.emit('errorMessage', 'Username not set!');
     }
@@ -42,6 +44,7 @@ io.on('connection', function (socket) {
       socket.leave(socket.room);
     }
     socket.room = requestedRoom;
+
     socket.join(requestedRoom, function() {
       socket.to(requestedRoom).emit('message', {
         username: 'System',
