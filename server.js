@@ -60,25 +60,19 @@ io.on('connection', function (socket) {
     });
   })
 
-  // socket.on('typing', function(message) {
-  //   if (!socket.room) {
-  //     return socket.emit('errorMessage', 'No rooms joined!');
-  //   }
-  //   socket.to(socket.room).emit('message', {
-  //     username: socket.username,
-  //     content: message
-  //   });
-  // })
-  //
-  // socket.on('stop typing', function(message) {
-  //   if (!socket.room) {
-  //     return socket.emit('errorMessage', 'No rooms joined!');
-  //   }
-  //   socket.to(socket.room).emit('message', {
-  //     username: socket.username,
-  //     content: message
-  //   });
-  // })
+  socket.on('typing', function(data) {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('typing', data);
+  })
+
+  socket.on('stop typing', function(data) {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('stop typing', data);
+  })
 });
 
 var port = process.env.PORT || 3000;

@@ -33,6 +33,7 @@ var App = React.createClass({
     this.setState({
       roomName: room
     });
+    console.log("ASDF", room, this.state.roomName)
   },
   render: function() {
     return (
@@ -75,16 +76,31 @@ var ChatRoom = React.createClass({
   getInitialState: function() {
     return {
       message: "",
-      messages: []
+      messages: [],
+      typingUsers: []
     }
   },
   componentDidMount: function() {
     this.props.socket.on('message', function(message) {
-      console.log('message1', message)
+      console.log('message1', message);
       this.setState({
         messages: this.state.messages.concat(message)
       })
-    }.bind(this))
+    }.bind(this));
+
+    this.props.socket.on('typing', function(data) {
+      console.log(data);
+      this.setState({
+        typingUsers: data
+      })
+    }.bind(this));
+
+    this.props.socket.on('stop typing', function(data) {
+      console.log(data);
+      this.setState({
+        typingUsers: data
+      })
+    }.bind(this));
   },
   componentWillReceiveProps: function(nextProps) {
     if (nextProps.room !== this.props.room) {
@@ -96,18 +112,46 @@ var ChatRoom = React.createClass({
     }
   },
   messageType: function(event) {
+    var typingUsers = this.state.typingUsers
+    var currentUser = this.props.socket.username
+    var newTypingUsers
+    if (event.target.value) {
+      if (typingUsers.indexOf(currentUser) === -1) {
+        newTypingUsers = typingUsers.concat(currentUser)
+        this.props.socket.emit('typing', newTypingUsers)
+        this.setState({
+          typingUsers: newTypingUsers
+        });
+      }
+    } else {
+      if (typingUsers.indexOf(currentUser) !== -1) {
+        newTypingUsers = typingUsers.filter(function(user) {return user !== currentUser})
+        this.props.socket.emit('stop typing', newTypingUsers)
+        this.setState({
+          typingUsers: newTypingUsers
+        });
+      }
+    }
     this.setState({
       message: event.target.value
     });
   },
   messageSubmit: function(event) {
+    var currentUser = this.props.socket.username
     event.preventDefault();
     var message = {
-      username: this.props.socket.username,
+      username: currentUser,
       content: this.state.message
     }
     this.props.socket.emit('message', this.state.message)
-    console.log('message2', message)
+    var typingUsers = this.state.typingUsers
+    if (typingUsers.indexOf(currentUser) !== -1) {
+      var newTypingUsers = typingUsers.filter(function(user) {return user !== currentUser})
+      this.props.socket.emit('stop typing', newTypingUsers)
+      this.setState({
+        typingUsers: newTypingUsers
+      });
+    }
     this.setState({
       message: "",
       messages: this.state.messages.concat(message)
@@ -118,11 +162,16 @@ var ChatRoom = React.createClass({
     messages = this.state.messages.map(function(a, i) {
       return <p key={'message_' + i}>{a.username}: {a.content}</p>
     })
+    var typingUsers = []
+    typingUsers = this.state.typingUsers.map(function(a, i) {
+      return <p key={'typingUser_' + i}>{a} is typing...</p>
+    })
     return (
       <div>
       {messages}
         <form onSubmit={this.messageSubmit}>
-          <textarea rows="2" style={{display: "block"}} onChange={this.messageType} value={this.state.message}/>
+        {typingUsers}
+          <input type="text" style={{display: "block"}} onChange={this.messageType} value={this.state.message}/>
           <input type="submit"/>
         </form>
       </div>
