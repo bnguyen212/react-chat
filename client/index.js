@@ -110,9 +110,9 @@ var App = React.createClass({
 
   },
   join: function(room) {
-    this.setState({
-      roomName: room
-    });
+    // this.setState({
+    //   roomName: room
+    // });
     this.state.socket.emit('room', room);
     console.log('HOLLA', room);
   },
