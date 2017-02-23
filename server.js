@@ -23,8 +23,9 @@ app.get('/', function(req, res) {
 });
 
 io.on('connection', function (socket) {
-  console.log('connected');
+  // console.log('connectedddddddd');
   socket.on('username', function(username) {
+    console.log('Welcome ', username);
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
     }
@@ -41,8 +42,10 @@ io.on('connection', function (socket) {
     if (socket.room) {
       socket.leave(socket.room);
     }
+
     socket.room = requestedRoom;
     socket.join(requestedRoom, function() {
+      console.log('successfully joined ', requestedRoom);
       socket.to(requestedRoom).emit('message', {
         username: 'System',
         content: socket.username + ' has joined'
@@ -51,9 +54,11 @@ io.on('connection', function (socket) {
   });
 
   socket.on('message', function(message) {
+    console.log('message: ', message);
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
+    console.log("HIT HERE!!!!!");
     socket.to(socket.room).emit('message', {
       username: socket.username,
       content: message
