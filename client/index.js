@@ -6,8 +6,8 @@ var App = React.createClass({
     return {
       socket: io(),
       // YOUR CODE HERE (1)
-      roomName: "Room1",
-      rooms: ["Room1", "Room2", "Room3", "Room4"]
+      roomName: "Praise the jiang",
+      rooms: ["Praise the jiang", "Go big", "Go small", "No go"]
     }
   },
   componentDidMount: function() {
@@ -38,7 +38,7 @@ var App = React.createClass({
     return (
       <div>
         <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={this.join.bind(this, "Room1") }>
+        <button className="btn btn-default" onClick={this.join.bind(this, "Join") }>
           Join the Party Place
         </button>
         <ChatRoomSelector rooms={this.state.rooms} room={this.state.roomName} onSwitch={this.join}/>
@@ -60,9 +60,9 @@ var ChatRoomSelector = React.createClass({
 
     tabs = self.props.rooms.map(function(room, index) {
       if (room === self.props.room) {
-return <li role="presentation" className="active" key={'Room_' + index}><a href="#">Join {room}</a></li>
+return <li className="active" key={room}><a href="#">Join {room}</a></li>
       }
-return <li role="presentation" onClick={self.handleClick.bind(self, room)} key={'Room_' + index}><a href="#">Join {room}</a></li>
+return <li onClick={self.handleClick.bind(self, room)} key={room}><a href="#">Join {room}</a></li>
     })
 
     return (
