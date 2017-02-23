@@ -41,8 +41,10 @@ io.on('connection', function (socket) {
     if (socket.room) {
       socket.leave(socket.room);
     }
+    console.log('fuck this', requestedRoom);
     socket.room = requestedRoom;
     socket.join(requestedRoom, function() {
+      console.log('inside', requestedRoom);
       socket.to(requestedRoom).emit('message', {
         username: 'System',
         content: socket.username + ' has joined'
@@ -58,7 +60,21 @@ io.on('connection', function (socket) {
       username: socket.username,
       content: message
     });
-  })
+  });
+
+  socket.on('typing', function() {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('typing', socket.username)
+  });
+
+  socket.on('notTyping', function() {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('notTyping', socket.username)
+  });
 });
 
 var port = process.env.PORT || 3000;
