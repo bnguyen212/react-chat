@@ -50,6 +50,13 @@ io.on('connection', function (socket) {
     });
   });
 
+   socket.on('typing', function(data) {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('typing', data);
+  })
+
   socket.on('message', function(message) {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
@@ -59,7 +66,8 @@ io.on('connection', function (socket) {
       content: message
     });
   })
-});
+
+  });
 
 var port = process.env.PORT || 3000;
 server.listen(port, function() {
