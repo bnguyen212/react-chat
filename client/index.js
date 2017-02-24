@@ -5,8 +5,8 @@ var App = React.createClass({
   getInitialState: function() {
     return {
       socket: io(),
-      roomName: "Party Place"
-    // YOUR CODE HERE (1)
+      roomName: "Room 1",
+      rooms: ["Room 1", "Room 2", "Room 3"]
     }
   },
   componentDidMount: function() {
@@ -19,7 +19,7 @@ var App = React.createClass({
       console.log('connected');
       this.state.socket.username = username;
       self.state.socket.emit('username', username);
-
+      this.state.socket.emit('room', this.state.roomName);
     }.bind(this));
 
     this.state.socket.on('errorMessage', function(message) {
@@ -33,16 +33,17 @@ var App = React.createClass({
       roomName: room
     });
     console.log("emitted", room);
-    this.state.socket.emit('room', room);
+
 
   },
   render: function() {
     return (
       <div>
         <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={ this.join.bind(this, "Party Place") }>
+        <button className="btn btn-default" onClick={ this.join.bind(this, "Room 1") }>
           Join the Party Place
         </button>
+        <ChatRoomSelector rooms={ this.state.rooms } name={ this.state.name } onSwitch={ this.join}></ChatRoomSelector>
         <ChatRoom socket={ this.state.socket } username={ this.state.username } roomName={ this.state.roomName }></ChatRoom>
       </div>
       );
@@ -99,12 +100,13 @@ var ChatRoom = React.createClass({
   render: function() {
     return (
       <div>
-        <form onSubmit={this.submit}>
+        <form onSubmit={ this.submit }>
           <div>
             { this.state.messages.map(function(message, i) {
-                return (<p key={i}>
-                         {message.username}: {message.content}
-                       </p>)
+                return (<p key={ i }>
+                          { message.username }:
+                          { message.content }
+                        </p>)
               }) }
           </div>
           <input type="text" onChange={ this.change } value={ this.state.textBoxValue }></input>
@@ -112,7 +114,28 @@ var ChatRoom = React.createClass({
         </form>
       </div>);
   }
+});
 
-})
+var ChatRoomSelector = React.createClass({
+  getInitialState: function() {
+    return {
+      rooms: this.props.rooms,
+      name: this.props.roomName,
+      onSwitch: ""
+    }
+  },
+  handleClick: function(name) {
+    this.props.onSwitch(name);
+  },
+  render: function() {
+    return (
+      <ul className="nav nav-tabs">
+        { this.props.rooms.map(function(room) {
+            return (<li role="presentation">{room}</li>)
+          }) }
+      </ul>
+    )
+  }
+});
 
 ReactDOM.render(<App />, document.getElementById('root'));
