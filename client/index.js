@@ -1,6 +1,17 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+var ChatRoomSelector = React.createClass({
+  getInitialState: function() {
+
+  },
+  render: function() {
+    return (
+      <div></div>
+    );
+  }
+});
+
 var ChatRoom = React.createClass({
   getInitialState: function() {
     return {
@@ -62,7 +73,7 @@ var ChatRoom = React.createClass({
         {
           this.state.messages.map((message) => {
             return (
-              <li key={JSON.stringify(new Date()) + message.content}>
+              <li key={(Math.floor(Math.random() * 1e6) + 1 ) + message.content}>
                 {message.username}: {message.content}
               </li>
             );
@@ -118,7 +129,7 @@ var App = React.createClass({
         <button className="btn btn-default" onClick={this.join.bind(null, "Party Place")}>
           Join the Party Place
         </button>
-        <ChatRoom name={this.state.rommName} socket={this.state.socket} />
+        <ChatRoom name={this.state.roomName} socket={this.state.socket} />
       </div>
     );
   }
