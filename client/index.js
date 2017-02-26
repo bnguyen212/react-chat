@@ -2,12 +2,17 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 var ChatRoomSelector = React.createClass({
-  getInitialState: function() {
-
-  },
   render: function() {
     return (
-      <div></div>
+      <div className="button-list">
+        {
+          this.props.rooms.map((room) => {
+            return <button key={room} className="btn btn-default" onClick={this.props.onSwitch.bind(null, room)}>
+              Join the {room}
+            </button>
+          })
+        }
+      </div>
     );
   }
 });
@@ -36,6 +41,9 @@ var ChatRoom = React.createClass({
   componentWillReceiveProps: function(newProps) {
     if (newProps.name !== this.props.name) {
       this.props.socket.emit('room', newProps.name);
+      this.setState({
+        messages: []
+      });
     }
   },
   change: function(event) {
@@ -64,7 +72,7 @@ var ChatRoom = React.createClass({
       message: ''
     });
   },
-  render: function(event) {
+  render: function() {
     return (
       <div>
         <input type="text" onChange={this.change} value={this.state.message} />
@@ -89,7 +97,8 @@ var App = React.createClass({
   getInitialState: function() {
     return {
       socket: io(),
-      roomName: ''
+      rooms: ["Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"],
+      roomName: 'Party Place'
     }
   },
   componentDidMount: function() {
@@ -115,20 +124,18 @@ var App = React.createClass({
   },
   join: function(room) {
     // room is called with "Party Place"
-    console.log("changed room to: ", room);
     this.setState({
       roomName: room
     });
 
     this.state.socket.emit('room', room);
+    console.log("changed room to: ", this.state, room);
   },
   render: function() {
     return (
       <div>
         <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={this.join.bind(null, "Party Place")}>
-          Join the Party Place
-        </button>
+        <ChatRoomSelector rooms={this.state.rooms} name={this.state.roomName} onSwitch={this.join} />
         <ChatRoom name={this.state.roomName} socket={this.state.socket} />
       </div>
     );
