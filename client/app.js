@@ -20,7 +20,6 @@ class App extends React.Component {
     this.state.socket.on('errorMessage', message => {
       // YOUR CODE HERE (3)
     });
-
   }
 
   join(room) {
