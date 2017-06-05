@@ -169,3 +169,9 @@ The end result will look like the following:
 <img src="img/chat3.png" width="600">
 
 Good luck!
+
+## Final Product
+
+Here's a sample of the final product. Feel free to design the entire layout on your own.
+
+![img/User1.png](img/User1.png)
