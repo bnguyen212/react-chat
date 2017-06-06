@@ -1,26 +1,37 @@
-var path = require('path');
-var webpack = require('webpack');
+const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
-  devtool: 'eval',
+  context: path.resolve(__dirname, 'client'),
   entry: [
-    // 'webpack-dev-server/client?http://localhost:3000',
-    // 'webpack/hot/only-dev-server',
-    './client/index'
+    'webpack-hot-middleware/client?__webpack_hmr&timeout=20000&reload=true',
+    './app'
   ],
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
-    publicPath: '/static/'
+    path: path.resolve(__dirname, './build'),
+    filename: 'js/app.bundle.js',
+    publicPath: '/assets/'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2015', 'react']
+          }
+        }
+      }
+    ]
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin()
   ],
-  module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['react-hot', 'babel'],
-      include: path.join(__dirname, 'client')
-    }]
-  }
+  stats: {
+    colors: true
+  },
+  devtool: 'source-map'
 };

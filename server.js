@@ -1,37 +1,48 @@
-var express = require('express');
-var path = require('path');
-var webpack = require('webpack');
-var webpackMiddleware = require("webpack-dev-middleware");
-var config = require('./webpack.config');
+const express           = require('express');
+const path              = require('path');
+const compress          = require('compression');
 
-var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+const webpack               = require('webpack');
+const webpackDevMiddleware  = require("webpack-dev-middleware");
+const webpackHotMiddleware  = require('webpack-hot-middleware');
+const config                = require('./webpack.config');
 
-var compiler = webpack(config);
-app.use(webpackMiddleware(compiler, {
+const app               = express();
+const server            = require('http').Server(app);
+const io                = require('socket.io')(server);
+
+const compiler = webpack(config);
+app.use(webpackDevMiddleware(compiler, {
+  noInfo: true,
   publicPath: config.output.publicPath,
+  stats: {
+    colors: true
+  },
   hot: true,
   historyApiFallback: true
 }));
-app.use(require('webpack-hot-middleware')(compiler));
+app.use(webpackHotMiddleware(compiler));
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Default routes
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
+app.use(compress());
 
-app.get('/', function(req, res) {
-  res.redirect('index.html');
+app.get('/', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-io.on('connection', function (socket) {
+// Socket handler
+io.on('connection', socket => {
   console.log('connected');
-  socket.on('username', function(username) {
+  socket.on('username', username => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
     }
     socket.username = String(username);
   });
 
-  socket.on('room', function(requestedRoom) {
+  socket.on('room', requestedRoom => {
     if (!socket.username) {
       return socket.emit('errorMessage', 'Username not set!');
     }
@@ -42,15 +53,15 @@ io.on('connection', function (socket) {
       socket.leave(socket.room);
     }
     socket.room = requestedRoom;
-    socket.join(requestedRoom, function() {
+    socket.join(requestedRoom, () => {
       socket.to(requestedRoom).emit('message', {
         username: 'System',
-        content: socket.username + ' has joined'
+        content: `${socket.username} has joined`
       });
     });
   });
 
-  socket.on('message', function(message) {
+  socket.on('message', message => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
@@ -61,7 +72,7 @@ io.on('connection', function (socket) {
   })
 });
 
-var port = process.env.PORT || 3000;
-server.listen(port, function() {
-  console.log('Started, listening on port ', port);
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}!`);
 });
