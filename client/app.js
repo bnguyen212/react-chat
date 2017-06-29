@@ -1,9 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import _ from 'underscore';
+import _ from 'underscore';
 
 
+class ChatRoomSelector extends React.Component {
+  constructor(props){
+    super(props);
 
+  }
+
+
+  render() {
+    const wrapItem = function(roomitem){
+      if(roomitem === this.props.roomName){
+        return <li role="presentation" className="active" onClick={() => { this.props.onSwitch(roomitem) }} key={roomitem}>
+                <a href="#">{roomitem}</a>
+              </li>
+      }
+      return <li role="presentation" onClick={() => { this.props.onSwitch(roomitem) }} key={roomitem}>
+              <a href="#">{roomitem}</a>
+            </li>
+    }
+
+    return (
+      <ul className="nav nav-tabs"> {this.props.rooms.map(wrapItem.bind(this))}  </ul>
+      /* <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/> */
+
+    )
+  }
+}
 
 
 class ChatRoom extends React.Component{
@@ -70,7 +95,7 @@ class ChatRoom extends React.Component{
 
       <div style={divStyle}>
         <ul>
-          {this.state.messages.map( msgobj => <p key={msgobj.username}>{msgobj.username}: {msgobj.content}</p>)}
+          {this.state.messages.map( msgobj => <p key={_.uniqueId()}>{msgobj.username}: {msgobj.content}</p>)}
 
         </ul>
         <form onSubmit={this.handleSubmit}>
@@ -85,31 +110,6 @@ class ChatRoom extends React.Component{
   }
 }
 
-class ChatRoomSelector extends React.Component {
-  constructor(props){
-    super(props);
-
-  }
-
-
-  render() {
-    const wrapItem = function(roomitem){
-      if(roomitem === this.props.roomName){
-        return <li role="presentation" className="active" onClick={() => { this.props.onSwitch(roomitem) }} key={roomitem}>
-                <a href="#">{roomitem}</a>
-              </li>
-      }
-      return <li role="presentation" onClick={() => { this.props.onSwitch(roomitem) }} key={roomitem}>
-              <a href="#">{roomitem}</a>
-            </li>
-    }
-
-    return
-      (<ul className="nav nav-tabs"> {this.props.rooms.map(wrapItem.bind(this))}  </ul>
-      <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>)
-
-  }
-}
 
 class App extends React.Component {
   constructor(props) {
@@ -136,7 +136,6 @@ class App extends React.Component {
       this.setState({username: username.trim()});
       this.state.socket.emit('username', username);
       this.state.socket.emit('room', this.state.roomName);
-
     });
 
     this.state.socket.on('errorMessage', message => {
@@ -149,6 +148,7 @@ class App extends React.Component {
     // room is called with "Party Place"
     console.log(room);
     this.setState({roomName: room});
+    this.state.socket.emit('room', room);
   }
 
   render() {
@@ -159,7 +159,7 @@ class App extends React.Component {
         <h1>React Chat</h1>
 
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join.bind(this)}/>
-      {/* <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/> */}
+        <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
 
 
 
