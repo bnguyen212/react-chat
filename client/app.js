@@ -6,7 +6,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       socket: io(),
-      // YOUR CODE HERE (1)
+      roomName: 'No room selected!',
+      username: "",
     };
   }
 
@@ -14,11 +15,14 @@ class App extends React.Component {
     // WebSockets Receiving Event Handlers
     this.state.socket.on('connect', () => {
       console.log('connected');
-      // YOUR CODE HERE (2)
+      var username = prompt("Please enter your username!")
+      this.setState = ({
+        username: username
+      });
     });
 
     this.state.socket.on('errorMessage', message => {
-      // YOUR CODE HERE (3)
+      alert("There was an error: ", message)
     });
   }
 
