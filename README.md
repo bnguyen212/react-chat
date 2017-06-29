@@ -60,7 +60,7 @@ this.socket.emit('eventName', 'dataToSend');
 
 Note that we already handled connections for you and stored the socket object on `this.state` - the root state of the `<App />` component.
 
-## Part 1: Chat component - `client/index.js`
+## Part 1: Chat component - `client/app.js`
 
 > **Note:** After completing (and while completing) Step 1, you should be testing your application. Use multiple browser tabs to attempt to send and receive messages between your tabs!
 
@@ -74,7 +74,7 @@ Start by implementing some basics that we have given you function definitions fo
 1. Get and store a username from the user in the callback of the socket's `connect` event - you may use `prompt()` to get input from the user in an easy way! Store your username in the state object at `this.state` using `setState`.
 1. Determine how you will handle errors by filling in the callback function of the socket's `errorMessage` event. `alert()`ing potential errors is sufficient here.
 
-Next, we'll write our logic for sending and receiving messages in a `<ChatRoom />` React component. Notice in **`client/index.js`** that there is already a button setup with an `onClick` event of the `join` function, passing in "Party Place."
+Next, we'll write our logic for sending and receiving messages in a `<ChatRoom />` React component. Notice in **`client/app.js`** that there is already a button setup with an `onClick` event of the `join` function, passing in "Party Place."
 
 > **Note:** Since we're only dealing with one room at a time for now, calling `join` with only "Party Place" for now is fine - when we design a `<ChatRoomSelector />` component in the next step, we will need to change things.
 
@@ -88,7 +88,7 @@ Next, create a component called `<ChatRoom />` that handles all the logic for se
 
 Now, use the lifecycle methods you learned to change state and the display of the `<ChatRoom />` over time. You may try to design these yourself, or you can follow the spec below:
 
-### Lifecycle spec for `<ChatRoom />` component - `client/index.js`
+### Lifecycle spec for `<ChatRoom />` component - `client/app.js`
 * `constructor` (called before a component gets rendered to set its state object)
   * Calls `super(props)`
   * Sets the state of the component with the following:
@@ -122,13 +122,13 @@ Now, use the lifecycle methods you learned to change state and the display of th
 		
 > ⚠️ **Warning:** Do not use `this.state.messages.push` (or the equivalent for the array that is storing your messages) to put new messages in your state. Remember, we always call `setState` to modify state rather than changing `this.state` itself. Instead of pushing directly, you could push to a temporary array and then set the temporary array to the new `messages` inside of `setState` or use [`.concat(/* an item you want to put in */)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat) to return you an array with a new item at the end.
 
-## Part 2: Multi-room chat - `client/index.js`
+## Part 2: Multi-room chat - `client/app.js`
 
 Next, we'll implement multiple rooms with a separate component (on the same level as `<ChatRoom />`) called `<ChatRoomSelector />` that will allow us to change which room we are currently chatting with. Note that you will be hard-coding values for room names. The end result will look like the following:
 
 <img src="img/chat2.png" width="600">
 
-### Restructuring `<App />` a little - `client/index.js`
+### Restructuring `<App />` a little - `client/app.js`
 
 Because we are dealing with multiple rooms now, we will have to replace our button that calls `this.join` with the name of the only room we have ("Party Place") with a component that we will design below.
 
@@ -140,7 +140,7 @@ Last thing: move the emitting of the `room` event from the `join` function into 
 
 That's all the restructuring we need! We handled potential changes to `this.props.roomName` on the `<ChatRoom />` level in the last step, so now, changes to `this.state.roomName` on the `<App />` level should emit a new `room` event and update state accordingly.
 
-### Spec for `<ChatRoomSelector />` component - `client/index.js`
+### Spec for `<ChatRoomSelector />` component - `client/app.js`
 Now, it's up to you to design this component from the ground-up using the below spec of props and lifecycle methods.
 
 **Props**
@@ -162,7 +162,7 @@ Note that all of these props are passed in from the `<App />` level, when we ren
 
 Create new events in `server.js` called `typing` and `stop typing` that handles received `typing` and `stop typing` events and emits the same events to the rest of the room.
 
-You will also need to change your `client/index.js` to emit a `typing` event when the user is typing (or when `this.state.message` is not empty!) and a `stop typing` event when they are not! Handle the display logic accordingly by updating the `state` of your `<ChatRoom />` to include an array of typing users and rendering with `<span>` items of each typing user with "_username_ is typing..."
+You will also need to change your `client/app.js` to emit a `typing` event when the user is typing (or when `this.state.message` is not empty!) and a `stop typing` event when they are not! Handle the display logic accordingly by updating the `state` of your `<ChatRoom />` to include an array of typing users and rendering with `<span>` items of each typing user with "_username_ is typing..."
 
 The end result will look like the following:
 
