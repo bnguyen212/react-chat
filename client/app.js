@@ -36,10 +36,13 @@ class ChatRoom extends React.Component{
     super(props);
     this.state = {
       message: "",
-      messages: []
+      messages: [],
+      typingusers: []
     }
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.addTyper = this.addTyper.bind(this);
+    this.removeTyper = this.removeTyper.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -64,6 +67,43 @@ class ChatRoom extends React.Component{
       this.setState({messages: msgs})
     })
 
+    this.props.socket.on('typing', usertyping => {
+      console.log("received typing event from", usertyping);
+      // if(this.state.typingusers.indexOf(usertyping)===-1){
+      //   const currentypers = this.state.typingusers.concat([usertyping]);
+      //   this.setState({typingusers: currentypers});
+      // }
+      this.addTyper(usertyping);
+    } )
+
+    this.props.socket.on('stoptyping', userstoptyping => {
+      console.log("received STOP typing event from", userstoptyping);
+      // const removeindex = this.state.typingusers.indexOf(userstoptyping);
+      // if(removeindex!==-1){
+      //   var currenttypers = this.state.typingusers.slice();
+      //   currenttypers.splice(removeindex,1);
+      //   this.setState({typingusers: currenttypers});
+      // }
+      this.removeTyper(userstoptyping)
+    })
+
+  }
+
+  removeTyper(user){
+    const removeindex = this.state.typingusers.indexOf(user);
+    if(removeindex!==-1){
+      var currenttypers = this.state.typingusers.slice();
+      currenttypers.splice(removeindex,1);
+      this.setState({typingusers: currenttypers});
+    }
+  }
+
+  addTyper(user){
+    if(this.state.typingusers.indexOf(user)===-1){
+      const currentypers = this.state.typingusers.concat([user]);
+      this.setState({typingusers: currentypers});
+    }
+
   }
 
   handleSubmit(event){
@@ -77,33 +117,54 @@ class ChatRoom extends React.Component{
     // this.setState()
     // console.log("messages after submit",this.state.messages);
     this.props.socket.emit('message', msg);
+    this.props.socket.emit('stoptyping', this.props.username);
 
   }
 
   handleChange(event){
     this.setState({message: event.target.value})
+    console.log("typing users",this.state.typingusers);
+    if(event.target.value.length>0 ){
+      console.log("this user is aobut to emit typign event");
+      this.props.socket.emit('typing', this.props.username);
+    }else{
+      this.props.socket.emit('stoptyping', this.props.username)
+    }
   }
   render() {
 
     const divStyle = {
         border: '1px solid black',
-        padding: '20px',
-        height: '500px'
+        padding: '20px 20px 20px 0px',
+        height: '500px',
+        position: 'relative'
     };
+    var typingstr = "";
+    if(this.state.typingusers.length>0){
+      typingstr = "is typing";
+      this.state.typingusers.forEach( user => {
+        typingstr= user+", "+typingstr
+      })
+    }
 
     return (
-
+      <div>
       <div style={divStyle}>
-        <ul>
-          {this.state.messages.map( msgobj => <p key={_.uniqueId()}>{msgobj.username}: {msgobj.content}</p>)}
+        <ul style={{paddingLeft: "10px"}}>
+          {this.state.messages.map( msgobj => <p key={_.uniqueId()} >{msgobj.username}: {msgobj.content}</p>)}
 
         </ul>
+        <span style={{bottom:"0", position:"absolute"}}>{typingstr}</span>
+      </div>
+      <div>
         <form onSubmit={this.handleSubmit}>
-          <label> Enter message</label>
-          <input type="text" value={this.state.message} onChange={this.handleChange}/>
-          <input type="submit" value="Submit"/>
+          <div className="form-group">
+          <input type="text" className="form-control" value={this.state.message} onChange={this.handleChange} placeholder="Enter message..." style={{height:"50px"}}/>
+          <input type="submit" value="Submit" style={{float:"right"}}/>
+        </div>
         </form>
       </div>
+    </div>
 
 
     )

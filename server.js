@@ -72,6 +72,23 @@ io.on('connection', socket => {
       content: message
     });
   })
+
+
+  socket.on('typing', usertyping => {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No room in typing!');
+    }
+    socket.broadcast.to(socket.room).emit('typing',usertyping)
+
+  })
+
+  socket.on('stoptyping', stoptypingevent => {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No room in typing!');
+    }
+    socket.broadcast.to(socket.room).emit('stoptyping',stoptypingevent)
+
+  })
 });
 
 const port = process.env.PORT || 3000;
