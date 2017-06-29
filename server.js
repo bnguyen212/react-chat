@@ -53,6 +53,7 @@ io.on('connection', socket => {
       socket.leave(socket.room);
     }
     socket.room = requestedRoom;
+    console.log("settig socket.room username is", socket.username);
     socket.join(requestedRoom, () => {
       socket.to(requestedRoom).emit('message', {
         username: 'System',
@@ -65,6 +66,7 @@ io.on('connection', socket => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
+    console.log("server received message event with", message);
     socket.to(socket.room).emit('message', {
       username: socket.username,
       content: message
