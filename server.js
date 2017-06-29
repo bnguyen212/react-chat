@@ -70,6 +70,14 @@ io.on('connection', socket => {
       content: message
     });
   })
+
+  socket.on('typing', () => {
+    socket.to(socket.room).emit('typing', socket.username);
+  })
+
+  socket.on('stop typing', () => {
+    socket.to(socket.room).emit('stop typing', socket.username);
+  })
 });
 
 const port = process.env.PORT || 3000;
