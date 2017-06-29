@@ -9,7 +9,6 @@ class ChatRoomSelector extends React.Component {
 
   }
 
-
   render() {
     const wrapItem = function(roomitem){
       if(roomitem === this.props.roomName){
@@ -24,7 +23,6 @@ class ChatRoomSelector extends React.Component {
 
     return (
       <ul className="nav nav-tabs"> {this.props.rooms.map(wrapItem.bind(this))}  </ul>
-      /* <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/> */
 
     )
   }
@@ -60,30 +58,17 @@ class ChatRoom extends React.Component{
   componentDidMount() {
     //caled right before chatroom gets rendered
     this.props.socket.on('message', message => {
-      // alert(message.user);
-      // const msg = `${message.username}: ${message.content}`
-      // const messagescopy = this.state.messages.slice();
       const msgs = this.state.messages.concat([{username: message.username, content: message.content}]);
       this.setState({messages: msgs})
     })
 
     this.props.socket.on('typing', usertyping => {
       console.log("received typing event from", usertyping);
-      // if(this.state.typingusers.indexOf(usertyping)===-1){
-      //   const currentypers = this.state.typingusers.concat([usertyping]);
-      //   this.setState({typingusers: currentypers});
-      // }
       this.addTyper(usertyping);
     } )
 
     this.props.socket.on('stoptyping', userstoptyping => {
       console.log("received STOP typing event from", userstoptyping);
-      // const removeindex = this.state.typingusers.indexOf(userstoptyping);
-      // if(removeindex!==-1){
-      //   var currenttypers = this.state.typingusers.slice();
-      //   currenttypers.splice(removeindex,1);
-      //   this.setState({typingusers: currenttypers});
-      // }
       this.removeTyper(userstoptyping)
     })
 
@@ -135,7 +120,7 @@ class ChatRoom extends React.Component{
 
     const divStyle = {
         border: '1px solid black',
-        padding: '20px 20px 20px 0px',
+        padding: '5px 20px 20px 5px',
         height: '500px',
         position: 'relative'
     };
@@ -150,11 +135,12 @@ class ChatRoom extends React.Component{
     return (
       <div>
       <div style={divStyle}>
+        <h4>Welcome to {this.props.roomName} {this.props.username || "!    Please provide a username."}</h4>
         <ul style={{paddingLeft: "10px"}}>
           {this.state.messages.map( msgobj => <p key={_.uniqueId()} >{msgobj.username}: {msgobj.content}</p>)}
 
         </ul>
-        <span style={{bottom:"0", position:"absolute"}}>{typingstr}</span>
+        <span style={{bottom:"0", paddingLeft:"5px", position:"absolute", color:"#BBBBBB", fontSize:"larger"}}>{typingstr}</span>
       </div>
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -213,19 +199,27 @@ class App extends React.Component {
   }
 
   render() {
+    if(this.state.username){
+      return (
+        <div>
+          <h1>React Chat</h1>
+          <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join.bind(this)}/>
+          <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
+        </div>
+      )
+    }else{
 
+      return (
 
-    return (
-      <div>
-        <h1>React Chat</h1>
+        <div>
+          <h1>React Chat</h1>
+          <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join.bind(this)}/>
+          {/* <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/> */}
+        </div>
+      );
 
-        <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join.bind(this)}/>
-        <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
+    }
 
-
-
-      </div>
-    );
   }
 }
 
