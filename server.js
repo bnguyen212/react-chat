@@ -54,6 +54,8 @@ io.on('connection', socket => {
     }
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
+      console.log('reached room on server');
+
       socket.to(requestedRoom).emit('message', {
         username: 'System',
         content: `${socket.username} has joined`
@@ -65,12 +67,31 @@ io.on('connection', socket => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    socket.to(socket.room).emit('message', {
+    console.log('server received message');
+    io.to(socket.room).emit('message', {
       username: socket.username,
       content: message
     });
-  })
+  });
+
+  //track typing:
+  socket.on('typing', () => {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    console.log('receives typing');
+    socket.to(socket.room).emit('typing', { username: socket.username } );
+  });
+  socket.on('stoptyping', () => {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    console.log('receives stop of typing');
+    socket.to(socket.room).emit('stoptyping', { username: socket.username });
+  });
 });
+
+
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
