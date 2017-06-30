@@ -39,7 +39,7 @@ io.on('connection', socket => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
     }
-    socket.username = String(username);
+    socket.username = String(username); // new
   });
 
   socket.on('room', requestedRoom => {
@@ -54,7 +54,7 @@ io.on('connection', socket => {
     }
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
-      socket.to(requestedRoom).emit('message', {
+      socket.to(requestedRoom).emit('message', { //.to() and .in() the same
         username: 'System',
         content: `${socket.username} has joined`
       });
@@ -62,6 +62,7 @@ io.on('connection', socket => {
   });
 
   socket.on('message', message => {
+    console.log(socket.room)
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
@@ -69,6 +70,9 @@ io.on('connection', socket => {
       username: socket.username,
       content: message
     });
+  })
+  socket.on('typing', () =>{
+    socket.to(socket.room).emit('typing',socket.username);
   })
 });
 
