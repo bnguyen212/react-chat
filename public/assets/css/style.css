@@ -1,0 +1,44 @@
+#title {
+  background-color: rgb(54, 67, 89);
+  color: white;
+  border-radius: 15px;
+  padding: 25px;
+}
+#room_buttons {
+  margin: 15px 0 0 0 ;
+}
+#room_buttons * {
+  margin: 2px;
+}
+#room_buttons button:focus {
+  background-color: rgb(54, 67, 89);
+  color: white;
+}
+#messages_box {
+  border: 2px solid rgb(54, 67, 89);
+  border-radius: 15px;
+
+  margin: 0px 20px;
+  padding: 10px;
+
+  color: rgb(54, 67, 89);
+}
+#messages_box h3 {
+  margin-top: 0;
+}
+#messages {
+  background-color: rgba(205,205,205,0.2);
+  border: 2px inset rgba(54, 67, 89, 0.1);
+  border-radius: 15px;
+
+  padding: 10px;
+
+}
+
+.current_room {
+  background-color: rgb(54, 67, 89);
+  color: white;
+}
+.typing {
+  font-style: italic;
+}
