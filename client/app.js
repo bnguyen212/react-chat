@@ -188,7 +188,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 id="title">React Chat</h1>
+        <h1 id="title">Amanda Chat</h1>
         <h3>Logged in as: {this.state.username}</h3>
         {this.state.username==="Guest" && <form id="login" onSubmit={(e) => {this.handleSubmitUsername(e)}}>
           <input
