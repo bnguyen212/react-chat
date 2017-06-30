@@ -65,6 +65,7 @@ io.on('connection', socket => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
+    console.log("Sent to: " + socket.room);
     socket.to(socket.room).emit('message', {
       username: socket.username,
       content: message
