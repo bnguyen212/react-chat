@@ -32,6 +32,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
+var roomUsers = {};
+var typingPeople = {};
+
+
 // Socket handler
 io.on('connection', socket => {
   console.log('connected');
@@ -49,7 +53,6 @@ io.on('connection', socket => {
   //     content: `${socket.username} has changed username to: ${username}`
   //   });
   // })
-
   socket.on('room', requestedRoom => {
     if (!socket.username) {
       return socket.emit('errorMessage', 'Username not set!');
@@ -59,7 +62,19 @@ io.on('connection', socket => {
     }
     if (socket.room) {
       socket.leave(socket.room);
+      socket.to(socket.room).emit('message', {
+        username: 'System',
+        content: `${socket.username} has left :(`
+      });
     }
+    //remove from old room
+    var oldRoomUsers = roomUsers[socket.room]  || [];
+    var newOld = oldRoomUsers.slice();
+    newOld.splice(oldRoomUsers.indexOf(socket.username), 1);
+    roomUsers[socket.room] = newOld;
+    io.to(socket.room).emit('updateusers', roomUsers[socket.room]);
+
+    //join new room:
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
       console.log('reached room on server');
@@ -68,10 +83,21 @@ io.on('connection', socket => {
         username: 'System',
         content: `${socket.username} has joined`
       });
-      io.to(requestedRoom).emit('newuser', {
-        username: socket.username
-      });
+      var newRoomUsers = roomUsers[socket.room] || [];
+      var newNew = newRoomUsers.slice();
+      newNew.push(socket.username);
+      roomUsers[socket.room] = newNew;
+      io.to(requestedRoom).emit('updateusers', roomUsers[socket.room]);
     });
+  });
+
+  socket.on('usernamechange', newUsername => {
+
+    var users = roomUsers[socket.room];
+    users.splice(users.indexOf("Guest"), 1);
+    users.push(newUsername);
+    roomUsers[socket.room] = users;
+    io.to(socket.room).emit('updateusers', roomUsers[socket.room])
   });
 
   socket.on('message', message => {
@@ -87,7 +113,6 @@ io.on('connection', socket => {
 
   //track typing:
   //object with username and timeout key-value pairs
-  var typingPeople = {};
 
   socket.on('typing', () => {
     if (!socket.room) {
@@ -103,7 +128,7 @@ io.on('connection', socket => {
     var timeout = setTimeout(() => {
       //stop typing
       socket.to(socket.room).emit('stoptyping', { username: socket.username});
-    }, 500);
+    }, 400);
     typingPeople[socket.username] = timeout;
   });
   socket.on('stoptyping', () => {
@@ -113,6 +138,11 @@ io.on('connection', socket => {
     // console.log('receives stop of typing');
     socket.to(socket.room).emit('stoptyping', { username: socket.username });
   });
+  socket.on('disconnect', ()  => {
+    var oldUsers = roomUsers[socket.room];
+    oldUsers.splice(oldUsers.indexOf(socket.username), 1);
+    roomUsers[socket.room] = oldUsers;
+  })
 });
 
 

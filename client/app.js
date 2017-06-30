@@ -11,7 +11,7 @@ class ChatRoom extends React.Component {
       message: "",
       messages: [],
       typingusers: [],
-      users: []
+      users: ['this is a user']
     }
     // console.log('STATE: ',this.state);
 
@@ -41,18 +41,27 @@ class ChatRoom extends React.Component {
       }
       // console.log('received stop typing: ',this.state);
     });
-    this.state.socket.on('newuser', (data) => {
-      var newUser = data.username;
-      if (this.state.users.indexOf(newUser) < 0) {
-        var newUserArr = this.state.users.slice();
-        newUserArr.push(newUser);
-        this.setState({users: newUserArr});
-      }
-    });
+    // this.state.socket.on('newuser', (data) => {
+    //   var newUser = data.username;
+    //   if (this.state.users.indexOf(newUser) < 0) {
+    //     var newUserArr = this.state.users.slice();
+    //     newUserArr.push(newUser);
+    //     this.setState({users: newUserArr});
+    //   }
+    // });
+    this.state.socket.on('updateusers', (data) => {
+      // var loseUser = data.username;
+      // // if (this.state.users.indexOf(loseUser) >= 0) {
+      //   var newUserArr = this.state.users.slice();
+      //   newUserArr.splice(this.state.users.indexOf(loseUser), 1);
+      //   this.setState({users: newUserArr});
+      // // }
+      this.setState({users: data})
+    })
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.roomName !== this.state.roomName) {
-      this.setState({roomName: nextProps.roomName, messages: [], typingusers: []})
+      this.setState({roomName: nextProps.roomName, messages: [], typingusers: []});
     }
   }
   handleSubmit(e) {
@@ -82,7 +91,7 @@ class ChatRoom extends React.Component {
           }
           return <span key={index}> {returnUser}</span>
         })}
-      </h5>
+        </h5>
         <div id="messages">
 
           {this.state.messages.map((msg, index) => {
@@ -167,9 +176,8 @@ class App extends React.Component {
   }
   handleSubmitUsername(e) {
     e.preventDefault();
-    // console.log('sends new username');
+    this.state.socket.emit('usernamechange', this.state.usernametemp);
     this.setState({username: this.state.usernametemp});
-    // this.state.socket.emit('changedusername', this.state.usernametemp);
     this.state.socket.emit('username', this.state.usernametemp);
   }
   handleUsername(e) {
