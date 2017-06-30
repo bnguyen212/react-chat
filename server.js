@@ -61,6 +61,20 @@ io.on('connection', socket => {
     });
   });
 
+  socket.on('typing',(data) =>{
+      socket.to(socket.room).emit('typing', {
+        username:socket.username
+      })
+  })
+
+  socket.on('noTyping',(data) =>{
+      socket.to(socket.room).emit('noTyping', {
+        username:socket.username
+      })
+  })
+
+
+
   socket.on('message', message => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
