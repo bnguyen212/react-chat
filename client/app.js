@@ -192,7 +192,13 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 id="title">ReactChat</h1>
+        <h1 id="title">ReactChat
+          <div>
+            <h1 id="one">.</h1>
+            <h1 id="two">.</h1>
+            <h1 id="three">.</h1>
+          </div>
+        </h1>
         <div id="login_box">
           <h3 className="text-center">logged in as: {this.state.username}</h3>
           {this.state.username==="Guest" &&
@@ -205,7 +211,8 @@ class App extends React.Component {
             />
             <input
               type="submit"
-              value="Save Username"
+              value="Save"
+              className="btn btn-info"
             />
           </form>}
         </div>
