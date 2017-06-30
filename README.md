@@ -8,7 +8,9 @@ The goal of this exercise is to create a simple chat application using React and
 
 ## Part 0: A WebSockets Reference
 
-> **Note:** Give this a quick overview and refer back to this section later to determine what events to emit and when!
+**Important:** Don't skip over this section! It is important in understanding how you will actually use sockets in this application
+
+> **Note:** Give this a quick overview and **refer back** to this section later to determine what events to emit and when!
 
 Below is a reference to all WebSockets events that you will be listening for and emitting for the purpose of chat. A WebSockets chat server has already been set up for you on the same server that is serving up your React application.
 
