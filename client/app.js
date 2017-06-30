@@ -14,9 +14,16 @@ class ChatRoom extends React.Component {
       users: ['this is a user']
     }
 
+    // console.log('STATE: ',this.state);
+
+
   }
   componentDidMount() {
     this.state.socket.on('message', (msgData) => {
+
+      // console.log('reached room on app');
+
+
       var newMessages = this.state.messages.slice();
       newMessages.push(`${msgData.username}: ${msgData.content}`);
       this.setState({messages: newMessages});
@@ -26,6 +33,9 @@ class ChatRoom extends React.Component {
         var newUsers = this.state.typingusers.slice();
         newUsers.push(typingData.username);
         this.setState({typingusers: newUsers});
+
+        // console.log('received typing: ',newUsers,this.state);
+
       }
     });
     this.state.socket.on('stoptyping', (typingData) => {
@@ -35,8 +45,25 @@ class ChatRoom extends React.Component {
         newUsers.splice(index, 1);
         this.setState({typingusers: newUsers});
       }
+
+      // console.log('received stop typing: ',this.state);
     });
+    // this.state.socket.on('newuser', (data) => {
+    //   var newUser = data.username;
+    //   if (this.state.users.indexOf(newUser) < 0) {
+    //     var newUserArr = this.state.users.slice();
+    //     newUserArr.push(newUser);
+    //     this.setState({users: newUserArr});
+    //   }
+    // });
     this.state.socket.on('updateusers', (data) => {
+      // var loseUser = data.username;
+      // // if (this.state.users.indexOf(loseUser) >= 0) {
+      //   var newUserArr = this.state.users.slice();
+      //   newUserArr.splice(this.state.users.indexOf(loseUser), 1);
+      //   this.setState({users: newUserArr});
+      // // }
+
       this.setState({users: data})
     })
   }
@@ -47,15 +74,23 @@ class ChatRoom extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
+
+
     var msg = this.state.message;
     this.state.socket.emit('message', msg);
+    // console.log("sent message to server");
     this.setState({message: ""});
     this.state.socket.emit('stoptyping');
+    // console.log('emitted stoptyping')
+
   }
   handleChange(e) {
     var msg = e.target.value;
     this.setState({message: msg});
     this.state.socket.emit('typing');
+
+    // console.log('emitted typing')
+
   }
   render() {
     return (
@@ -70,9 +105,13 @@ class ChatRoom extends React.Component {
         })}
         </h5>
         <div id="messages">
+
+
           {this.state.messages.map((msg, index) => {
             return ( <p key={index}>{msg}</p> );
           })}
+
+
           <div>
             {this.state.typingusers.map((user, index) => {
               return <span key={index} className="typing">{user} is typing...</span>
@@ -92,6 +131,9 @@ class ChatRoom extends React.Component {
             />
           </form>
         </div>
+
+
+
       </div>
     );
   }
@@ -129,6 +171,12 @@ class App extends React.Component {
     this.state.socket.on('connect', () => {
       console.log('connected');
       var user = this.state.username;
+
+      // // while (!user || user.length < 1) {
+      // user = prompt("Enter a username: ");
+      // this.setState({username: user});
+      // // }
+
       this.state.socket.emit('username', this.state.username);
       this.state.socket.emit('room', this.state.roomName);
     });
@@ -138,10 +186,12 @@ class App extends React.Component {
     });
   }
   join(room) {
-      if (this.state.roomName !== room){
-        this.setState({roomName: room});
-        this.state.socket.emit('room', room);
-      }
+
+    // console.log(room);
+    this.setState({roomName: room});
+    this.state.socket.emit('room', room);
+    console.log('reaches here in join');
+
   }
   handleSubmitUsername(e) {
     e.preventDefault();
@@ -152,6 +202,9 @@ class App extends React.Component {
   handleUsername(e) {
     var user = e.target.value;
     this.setState({usernametemp: user});
+
+    // console.log('adds to username', this.state.username);
+
   }
   render() {
     return (
@@ -181,3 +234,4 @@ class App extends React.Component {
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
+// ReactDOM.render(<WholeApp />, document.getElementById('root'));
