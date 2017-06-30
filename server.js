@@ -55,8 +55,8 @@ io.on('connection', socket => {
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
       socket.to(requestedRoom).emit('message', {
-        username: 'System',
-        content: `${socket.username} has joined`
+        username: 'alert',
+        content: `${socket.username} has joined the squad`
       });
     });
   });
