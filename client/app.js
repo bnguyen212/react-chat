@@ -83,7 +83,7 @@ class ChatRoom extends React.Component {
   render() {
     return (
       <div id="messages_box">
-        <h3 className="text-center">Messages in {this.state.roomName}</h3>
+        <h3 className="text-center">Room {this.state.roomName} Messages</h3>
         <h5> Current users: {this.state.users.map((user, index) => {
           var returnUser = user;
           if (index !== this.state.users.length-1) {
@@ -106,14 +106,18 @@ class ChatRoom extends React.Component {
 
           <form id="new_message" onSubmit={(e) => {this.handleSubmit(e)}}>
             <input
+              id="new_message_text"
               type="text"
               placeholder="Type message..."
               value={this.state.message}
               onChange={(e) => {this.handleChange(e)}}
+              className="form-control"
             />
             <input
+              id="new_message_btn"
               type="submit"
               value="Send"
+              className="btn btn-primary"
             />
           </form>
         </div>
@@ -144,10 +148,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       socket: io(),
-      rooms: ["Blue", "Red", "Green", "Jay"],
-      roomName: "Blue",
+      rooms: ["1", "2", "3", "4"],
+      roomName: "1",
       username: "Guest",
-      usernametemp: "Guest"
+      usernametemp: "Change Username..."
     };
   }
 
@@ -188,20 +192,23 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 id="title">Amanda Chat</h1>
-        <h3>Logged in as: {this.state.username}</h3>
-        {this.state.username==="Guest" && <form id="login" onSubmit={(e) => {this.handleSubmitUsername(e)}}>
-          <input
-            type="text"
-            placeholder="Enter Username..."
-            value={this.state.usernametemp}
-            onChange={(e) => {this.handleUsername(e)}}
-          />
-          <input
-            type="submit"
-            value="Save Username"
-          />
-        </form>}
+        <h1 id="title">AmandaChat</h1>
+        <div id="login_box">
+          <h3 className="text-center">logged in as: {this.state.username}</h3>
+          {this.state.username==="Guest" &&
+          <form id="login" onSubmit={(e) => {this.handleSubmitUsername(e)}}>
+            <input
+              type="text"
+              placeholder="Enter Username..."
+              value={this.state.usernametemp}
+              onChange={(e) => {this.handleUsername(e)}}
+            />
+            <input
+              type="submit"
+              value="Save Username"
+            />
+          </form>}
+        </div>
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName}
           onSwitch={(room) => this.join(room)} />
         <ChatRoom socket={this.state.socket} roomName={this.state.roomName}
