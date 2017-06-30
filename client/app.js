@@ -95,7 +95,22 @@ class ChatRoom extends React.Component {
         <div id="messages">
 
           {this.state.messages.map((msg, index) => {
-            return ( <p key={index}>{msg}</p> );
+            var classes="single_message";
+            var bp=msg.indexOf(':');
+            var username = msg.substring(0, bp);
+            if (username === "System") {
+              classes += " italic";
+            } else if (username === this.state.username) {
+              classes += " my_msg text-right"
+            }
+
+            var message = msg.substring(bp+2, msg.length);
+            console.log(classes);
+            return (
+              <p key={index} className={classes}>
+                <span className="msg_username">{username}:  </span>
+                <span className="msg_content">{message}</span>
+              </p> );
           })}
 
           <div>
@@ -146,12 +161,14 @@ function ChatRoomSelector (props) {
 class App extends React.Component {
   constructor(props) {
     super(props);
+    var defaultUsername = "Guest"+Math.round(Math.random()*100);
     this.state = {
       socket: io(),
       rooms: ["1", "2", "3", "4"],
       roomName: "1",
-      username: "Guest",
-      usernametemp: "Change Username..."
+      username: defaultUsername,
+      usernametemp: "Change Username...",
+      canChangeUsername: true
     };
   }
 
@@ -171,6 +188,11 @@ class App extends React.Component {
     this.state.socket.on('errorMessage', message => {
       alert(message);
     });
+
+    this.state.socket.on('usernamechange', () => {
+      console.log('reached receive username change');
+      this.setState({canChangeUsername: false});
+    })
   }
   join(room) {
     // console.log(room);
@@ -180,7 +202,7 @@ class App extends React.Component {
   }
   handleSubmitUsername(e) {
     e.preventDefault();
-    this.state.socket.emit('usernamechange', this.state.usernametemp);
+    this.state.socket.emit('usernamechange', {new: this.state.usernametemp, old: this.state.username});
     this.setState({username: this.state.usernametemp});
     this.state.socket.emit('username', this.state.usernametemp);
   }
@@ -201,7 +223,7 @@ class App extends React.Component {
         </h1>
         <div id="login_box">
           <h3 id="login_title" className="text-center">Logged in as: {this.state.username}</h3>
-          {this.state.username==="Guest" &&
+          {this.state.canChangeUsername &&
           <form id="login" onSubmit={(e) => {this.handleSubmitUsername(e)}}>
             <input
               id="username_input"
@@ -211,12 +233,22 @@ class App extends React.Component {
               onChange={(e) => {this.handleUsername(e)}}
             />
             <input
-              id="login_button"
+              id="login_btn"
               type="submit"
               value="Save"
               className="btn btn-info"
             />
           </form>}
+          {!this.state.canChangeUsername &&
+            <form id="change_username" onSubmit={(e) => {this.setState({canChangeUsername: true})}}>
+              <input
+                id="change_username_btn"
+                type="submit"
+                value="Change Username"
+                className="btn btn-info"
+              />
+            </form>
+          }
         </div>
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName}
           onSwitch={(room) => this.join(room)} />

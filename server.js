@@ -91,13 +91,20 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('usernamechange', newUsername => {
-
+  socket.on('usernamechange', nameData => {
+    var old = nameData.old;
+    var newer = nameData.new;
+    console.log('USERNAME CHANGE: ', old, newer);
+    io.to(socket.room).emit('message', {
+      username: 'System',
+      content: `${old} changed username to: ${newer}`
+    })
     var users = roomUsers[socket.room];
-    users.splice(users.indexOf("Guest"), 1);
-    users.push(newUsername);
+    users.splice(users.indexOf(socket.username), 1);
+    users.push(newer);
     roomUsers[socket.room] = users;
-    io.to(socket.room).emit('updateusers', roomUsers[socket.room])
+    io.to(socket.room).emit('updateusers', roomUsers[socket.room]);
+    socket.emit('usernamechange');
   });
 
   socket.on('message', message => {

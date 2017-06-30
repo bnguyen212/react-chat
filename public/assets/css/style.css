@@ -100,7 +100,7 @@
   border-radius: 5px;
   border: 5px double black;
   padding: 10px;
-  margin-left: -10px;
+  /*margin-left: -10px;*/
 }
 #username_input {
   width: 200px;
@@ -112,12 +112,15 @@
   background-color: rgb(240,240,240);
   font-weight: 200;
 }
-#login_button {
+.btn-info {
   /*background: linear-gradient(180deg, #999999, #dfdfdf);*/
   height: 35px;
   background-color: #333;
   border-color: #505050;
   font-weight: 700;
+}
+.btn-info:hover {
+  background-color: #03afaf;
 }
 #room_buttons {
   margin: 0 0
@@ -126,20 +129,22 @@
   margin: 2px;
   color: white;
   background-color: #313636;
-  border-color: #505050;
+  /*border-color: #505050;*/
   font-weight: 700;
   font-size: 20px;
+  border: 5px outset #505050;
 }
-#room_buttons button:focus {
+#room_buttons button:focus, .current_room {
   /*background-color: rgb(54, 67, 89);*/
   color: white;
   background: linear-gradient(#03afaf 20%, #007272 100%);
+  border: 5px inset #03afaf;
 }
 #messages_box {
   border: 2px solid rgb(54, 67, 89);
   border-radius: 15px;
 
-  margin: 0px 20px;
+  margin: 0px 10%;
   padding: 10px;
 
   background-color: rgba(105, 105, 105, 0.8);
@@ -160,6 +165,17 @@
   padding: 10px;
   overflow: scroll;
 }
+.single_message {
+  font-size: 18px;
+  margin: 5px 10px;
+  font-weight: 400;
+}
+.my_msg {
+  color: lightgrey;
+}
+.msg_username {
+  font-style: bold;
+}
 #new_message {
   display: flex;
   flex-basis: none;
@@ -176,10 +192,11 @@
   background: linear-gradient(#008c8c 10%, #03afaf 100%);
 }
 
-.current_room {
+/*.current_room {
   background: linear-gradient(#03afaf 20%, #007272 100%);
   color: white;
-}
+  border: 5px inset #03afaf;
+}*/
 .typing {
   font-style: italic;
 }
@@ -188,4 +205,7 @@
 }
 .bold {
   font-weight: 600;
+}
+.italic {
+  font-style: italic;
 }
