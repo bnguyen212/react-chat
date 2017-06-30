@@ -69,8 +69,17 @@ io.on('connection', socket => {
       username: socket.username,
       content: message
     });
-  })
+  });
 });
+
+socket.on('typing', () => {
+    socket.to(socket.room).emit('typing');
+  });
+
+  socket.on('stop typing', () => {
+    socket.to(socket.room).emit('stop typing');
+  });
+
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {

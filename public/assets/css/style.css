@@ -1,0 +1,23 @@
+.messageBox{
+  border-radius: 2px;
+  border: 1px solid #004208;
+  min-height: 200px;
+}
+
+.messageBoxHeader{
+  background-color: #84C68C;
+  color: #004208;
+  margin: 0px;
+  padding: 10px;
+  border-bottom: 1px solid #004208;
+}
+
+.thisName{
+  border-radius: 2px;
+  /*border: 1px solid #52A55C;*/
+  background-color: #84C68C;
+  color: white;
+  padding: 5px;
+  margin: 2px;
+
+}
