@@ -78,7 +78,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0px;
+  margin: 20px 0;
   /*background-color: rgba(200,200,200,0.4);*/
   padding-bottom: 10px;
   border-radius: 15px;
@@ -90,14 +90,15 @@
 }
 #login_title {
   font-family: "Roboto Slab", sans-serif;
+  font-size: 20px;
   font-weight: 600;
   /*background-color: rgba(10,190,230,0.6);*/
   /*background-color: rgba(255, 255, 255, 0.7);*/
-  background-color: rgb(240,240,240);
+  background-color: rgb(188,188,188);
   color: black;
 
   border-radius: 5px;
-  border: 1.25px dotted black;
+  border: 5px double black;
   padding: 10px;
   margin-left: -10px;
 }
