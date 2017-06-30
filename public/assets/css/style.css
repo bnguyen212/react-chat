@@ -9,10 +9,10 @@
 }
 #title {
   /*background-color: rgb(54, 67, 89);*/
-  background: linear-gradient(teal 20%, aqua 100%);
+  background: linear-gradient(#027272 20%, #05c4c4 100%);
   color: white;
   border-radius: 15px;
-  padding: 10px;
+  padding: 10px 20px;
   margin-bottom: 0;
 
   display: flex;
@@ -33,7 +33,7 @@
   margin-bottom: 0;
 
   animation-iteration-count: infinite;
-  animation-duration: 2.5s;
+  animation-duration: 3s;
   animation-timing-function: linear;
 }
 #one {
@@ -46,55 +46,32 @@
   animation-name: three;
 }
 @keyframes one {
-  0% {
-    color: white;
-  }
-  25% {
-    color: #4b4b4b;
-  }
-  50% {
-    color: white;
-  }
-  75% {
-    color: white;
-  }
-  100% {
-    color: white;
-  }
+  0% { color: white; }
+  25% { color: #4b4b4b; }
+  50% { color: white; }
+  75% { color: white; }
+  100% { color: white; }
 }
+/*@keyframes one {
+  0% { color: black; }
+  25% { color: #afacac; }
+  50% { color: black; }
+  75% { color: black; }
+  100% { color: black; }
+}*/
 @keyframes two {
-  0% {
-    color: white;
-  }
-  25% {
-    color: white;
-  }
-  50% {
-    color: #4b4b4b;
-  }
-  75% {
-    color: white;
-  }
-  100% {
-    color: white;
-  }
+  0% { color: white; }
+  25% { color: white; }
+  50% { color: #4b4b4b; }
+  75% { color: white; }
+  100% { color: white; }
 }
 @keyframes three {
-  0% {
-    color: white;
-  }
-  25% {
-    color: white;
-  }
-  50% {
-    color: white;
-  }
-  75% {
-    color: #4b4b4b;
-  }
-  100% {
-    color: white;
-  }
+  0% { color: white; }
+  25% { color: white; }
+  50% { color: white; }
+  75% { color: #4b4b4b; }
+  100% { color: white; }
 }
 #login_box {
   display: flex;
@@ -103,31 +80,35 @@
   justify-content: center;
   margin-bottom: 0px;
   /*background-color: rgba(200,200,200,0.4);*/
-  padding-bottom: 20px;
+  padding-bottom: 10px;
   border-radius: 15px;
-  color: lightblue;
+  /*color: lightblue;*/
   font-weight: bold;
 }
 #login_box * {
   flex: 1;
 }
 #login_title {
-  font-family: 'Archivo Black', sans-serif;
-  font-weight: 300;
-  color: black;
+  font-family: "Roboto Slab", sans-serif;
+  font-weight: 600;
   /*background-color: rgba(10,190,230,0.6);*/
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 10px;
+  /*background-color: rgba(255, 255, 255, 0.7);*/
+  background-color: rgb(240,240,240);
+  color: black;
+
   border-radius: 5px;
-  border: 1.5px dotted black;
+  border: 1.25px dotted black;
+  padding: 10px;
+  margin-left: -10px;
 }
 #username_input {
   width: 200px;
-  height: 30px;
+  height: 35px;
   margin-right: 3px;
   padding: 5px;
 
   color: grey;
+  background-color: rgb(240,240,240);
   font-weight: 200;
 }
 #login_button {
@@ -181,14 +162,17 @@
 #new_message {
   display: flex;
   flex-basis: none;
+  align-items: center;
 }
 #new_message_text {
   width: 80%;
   flex: 7;
+  background-color: rgb(240,240,240);
 }
 #new_message_btn {
   flex: 1;
   margin-left: 5px;
+  background: linear-gradient(#008c8c 10%, #03afaf 100%);
 }
 
 .current_room {
