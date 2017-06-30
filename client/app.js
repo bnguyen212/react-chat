@@ -6,8 +6,9 @@ class App extends React.Component {
     super(props);
     this.state = {
       socket: io(),
-      roomName: "No room selected",
-      username: ""
+      roomName: "Room 1",
+      username: "",
+      rooms: ['Room 1', 'Room 2', 'Room 3'],
     };
   }
 
@@ -18,32 +19,30 @@ class App extends React.Component {
       var username = prompt('Enter Username...');
       this.setState({username: username})
       this.state.socket.emit('username',username);
+      // this.state.socket.emit('room', this.state.roomName);
 
     });
 
     this.state.socket.on('errorMessage', message => {
-      alert('!!!!!error!!!!!');
-      console.log(message)
+      console.log("there was an error: ", message)
     });
   }
 
   join(room) {
     // room is called with "Party Place"
-    this.setState({
-      roomName: room
-    })
-    this.state.socket.emit('room', room);
+    console.log('joined room',  room.element)
+    this.setState({roomName: room.element})
+    this.state.socket.emit('room', room.element);
+
   }
 
 
   render() {
     return (
       <div>
+        <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join.bind(this)}/>
         <ChatRoom socket={this.state.socket} roomName={this.state.room} username={this.state.username}/>
         <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={() => this.join("Party Place")}>
-          Join the Party Place
-        </button>
       </div>
     );
   }
@@ -56,8 +55,8 @@ class ChatRoom extends React.Component {
       message: '',
       messages: []
     };
-    // this.handleSubmit = this.handleSubmit.bind(this);
-    // this.handleContentChange = this.handleContentChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleContentChange = this.handleContentChange.bind(this);
   }
 
   componentDidMount(){
@@ -76,7 +75,7 @@ class ChatRoom extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // console.log('f')
-    if(nextProps.roomName !== this.props.roomName) {
+    if(nextProps.roomName === this.props.roomName) {
       this.setState({
         messages: [],
       })
@@ -88,13 +87,8 @@ class ChatRoom extends React.Component {
     e.preventDefault();
     this.props.socket.emit('message', this.state.message);
     var newArr = this.state.messages.slice();
-    console.log('state' , this.state);
-    console.log('old ' , newArr)
     var username= this.props.username;
     var content = this.state.message;
-
-    console.log("username " , username);
-    console.log("message " , content);
 
     newArr.push({username : username,  content: content})
     this.setState({
@@ -130,4 +124,30 @@ class ChatRoom extends React.Component {
     )
   }
 }
+
+class ChatRoomSelector extends React.Component {
+  constructor(props){
+    super(props)
+  }
+  render() {
+    return(
+      <div className="row">
+        <div className="col s12">
+          <ul className="tabs">
+            {this.props.rooms.map((element, index) => <li key={index} className="tab col s3" onClick={() => { this.props.onSwitch({element}) }}><a>{element}</a></li>)}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+}
+
+
+
+
+
+
+
+
+
 ReactDOM.render(<App />, document.getElementById('root'));

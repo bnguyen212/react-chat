@@ -61,6 +61,15 @@ io.on('connection', socket => {
     });
   });
 
+  socket.on('typing', function(user){
+
+  })
+
+  socket.on('stopTyping', function(user){
+
+  })
+
+
   socket.on('message', message => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
