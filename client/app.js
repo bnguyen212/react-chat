@@ -80,11 +80,19 @@ class ChatRoom extends React.Component {
     console.log('messages are', this.state.messages);
     return (
       <div>
-        {this.state.messages.map((data) => (Message(data)))}
-        {this.state.usersTyping.map((user) => <p>{user} is typing...</p>)}
+        <div className='messaging-ui'>
+          <div className='message-board'>
+            {this.state.messages.map((data) => (Message(data)))}
+          </div>
+          {this.state.usersTyping.map((user) => <p>{user} is typing...</p>)}
+        </div>
         <form onSubmit={this.handleSubmit}>
-          <input type="text" onChange={this.handleText} value={this.state.inputText} />
-          <input type="submit" value="Send" />
+          <div className='input-group input-group-lg'>
+            <input className='form-control' type="text" onChange={this.handleText} value={this.state.inputText} />
+            <div className='input-group-btn'>
+              <button className='btn btn-default' type="submit">Send</button>
+            </div>
+          </div>
         </form>
       </div>
     );
@@ -155,13 +163,10 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>React Chat</h1>
+      <div className='chatroom'>
+        <h1>Super Chat!</h1>
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join} />
         <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username} />
-        <button className="btn btn-default" onClick={() => this.join("Party Place")}>
-          Join the Party Place
-        </button>
       </div>
     );
   }
