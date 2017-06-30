@@ -2,26 +2,26 @@ const express           = require('express');
 const path              = require('path');
 const compress          = require('compression');
 
-const webpack               = require('webpack');
-const webpackDevMiddleware  = require("webpack-dev-middleware");
-const webpackHotMiddleware  = require('webpack-hot-middleware');
-const config                = require('./webpack.config');
+// const webpack               = require('webpack');
+// const webpackDevMiddleware  = require("webpack-dev-middleware");
+// const webpackHotMiddleware  = require('webpack-hot-middleware');
+// const config                = require('./webpack.config');
 
 const app               = express();
 const server            = require('http').Server(app);
 const io                = require('socket.io')(server);
 
-const compiler = webpack(config);
-app.use(webpackDevMiddleware(compiler, {
-  noInfo: true,
-  publicPath: config.output.publicPath,
-  stats: {
-    colors: true
-  },
-  hot: true,
-  historyApiFallback: true
-}));
-app.use(webpackHotMiddleware(compiler));
+// const compiler = webpack(config);
+// app.use(webpackDevMiddleware(compiler, {
+//   noInfo: true,
+//   publicPath: config.output.publicPath,
+//   stats: {
+//     colors: true
+//   },
+//   hot: true,
+//   historyApiFallback: true
+// }));
+// app.use(webpackHotMiddleware(compiler));
 
 // Default routes
 const publicPath = path.join(__dirname, 'public');
@@ -29,7 +29,7 @@ app.use(express.static(publicPath));
 app.use(compress());
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 var roomUsers = {};
