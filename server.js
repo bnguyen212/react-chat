@@ -70,15 +70,19 @@ io.on('connection', socket => {
       content: message
     });
   });
+  
+  socket.on('typing', () => {
+      console.log("typing");
+      socket.to(socket.room).emit('typing');
+    });
+
+    socket.on('stopTyping', () => {
+      console.log("stopped typing")
+      socket.to(socket.room).emit('stopTyping');
+    });
 });
 
-socket.on('typing', () => {
-    socket.to(socket.room).emit('typing');
-  });
 
-  socket.on('stop typing', () => {
-    socket.to(socket.room).emit('stop typing');
-  });
 
 
 const port = process.env.PORT || 3000;

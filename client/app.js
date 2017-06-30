@@ -35,7 +35,7 @@ class ChatRoom extends React.Component{
     // newMessage.push
     this.setState({messages: newMessage})
     this.props.socket.emit('message', this.state.message);
-    this.props.socket.emit('stop typing');
+    this.props.socket.emit('stopTyping');
   }
 
 
@@ -133,7 +133,7 @@ class App extends React.Component {
       alert('Error: ' + message);
     });
 
-    this.state.socket.on('stop typing', () => {
+    this.state.socket.on('stopTyping', () => {
         var arrTyping=this.state.typing.slice();
         var removeIndex= arrTyping.indexOf(arrTyping);
         arrTyping.splice(removeIndex,1);
@@ -142,6 +142,9 @@ class App extends React.Component {
 
       this.state.socket.on('typing', () => {
         var arrTyping=this.state.typing.slice();
+        if (arrTyping.indexOf(this.state.username) > -1) {
+          return;
+        }
         arrTyping.push(this.state.username)
         this.setState({typing: arrTyping})
       })
