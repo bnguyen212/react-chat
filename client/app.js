@@ -83,15 +83,15 @@ class ChatRoom extends React.Component {
   render() {
     return (
       <div id="messages_box">
-        <h3 className="text-center">Room {this.state.roomName} Messages</h3>
-        <h5> Current users: {this.state.users.map((user, index) => {
+        <h3 className="text-center bold">Room {this.state.roomName} Messages</h3>
+        <h4 className="text-center"> Current users: {this.state.users.map((user, index) => {
           var returnUser = user;
           if (index !== this.state.users.length-1) {
             returnUser += ", ";
           }
-          return <span key={index}> {returnUser}</span>
+          return <span className="bold" key={index}> {returnUser}</span>
         })}
-        </h5>
+      </h4>
         <div id="messages">
 
           {this.state.messages.map((msg, index) => {
@@ -200,16 +200,18 @@ class App extends React.Component {
           </div>
         </h1>
         <div id="login_box">
-          <h3 className="text-center">logged in as: {this.state.username}</h3>
+          <h3 id="login_title" className="text-center">Logged in as: {this.state.username}</h3>
           {this.state.username==="Guest" &&
           <form id="login" onSubmit={(e) => {this.handleSubmitUsername(e)}}>
             <input
+              id="username_input"
               type="text"
               placeholder="Enter Username..."
               value={this.state.usernametemp}
               onChange={(e) => {this.handleUsername(e)}}
             />
             <input
+              id="login_button"
               type="submit"
               value="Save"
               className="btn btn-info"
