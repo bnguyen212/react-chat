@@ -10,7 +10,8 @@ class ChatRoom extends React.Component {
       username: this.props.username,
       message: "",
       messages: [],
-      typingusers: []
+      typingusers: [],
+      users: []
     }
     // console.log('STATE: ',this.state);
 
@@ -28,7 +29,7 @@ class ChatRoom extends React.Component {
         var newUsers = this.state.typingusers.slice();
         newUsers.push(typingData.username);
         this.setState({typingusers: newUsers});
-        console.log('received typing: ',newUsers,this.state);
+        // console.log('received typing: ',newUsers,this.state);
       }
     });
     this.state.socket.on('stoptyping', (typingData) => {
@@ -38,7 +39,15 @@ class ChatRoom extends React.Component {
         newUsers.splice(index, 1);
         this.setState({typingusers: newUsers});
       }
-      console.log('received stop typing: ',this.state);
+      // console.log('received stop typing: ',this.state);
+    });
+    this.state.socket.on('newuser', (data) => {
+      var newUser = data.username;
+      if (this.state.users.indexOf(newUser) < 0) {
+        var newUserArr = this.state.users.slice();
+        newUserArr.push(newUser);
+        this.setState({users: newUserArr});
+      }
     });
   }
   componentWillReceiveProps(nextProps) {
@@ -54,18 +63,26 @@ class ChatRoom extends React.Component {
     // console.log("sent message to server");
     this.setState({message: ""});
     this.state.socket.emit('stoptyping');
-    console.log('emitted stoptyping')
+    // console.log('emitted stoptyping')
   }
   handleChange(e) {
     var msg = e.target.value;
     this.setState({message: msg});
     this.state.socket.emit('typing');
-    console.log('emitted typing')
+    // console.log('emitted typing')
   }
   render() {
     return (
       <div id="messages_box">
         <h3 className="text-center">Messages in {this.state.roomName}</h3>
+        <h5> Current users: {this.state.users.map((user, index) => {
+          var returnUser = user;
+          if (index !== this.state.users.length-1) {
+            returnUser += ", ";
+          }
+          return <span key={index}> {returnUser}</span>
+        })}
+      </h5>
         <div id="messages">
 
           {this.state.messages.map((msg, index) => {
@@ -97,29 +114,20 @@ class ChatRoom extends React.Component {
   }
 }
 
-class ChatRoomSelector extends React.Component {
-  constructor(props) {
-    super(props);
-    // console.log('SELECTOR PROPS: ', this.props);
-  }
-  render() {
-    return (
-      <div>
-
-        <div id="room_buttons" className="text-center">
-          {this.props.rooms.map((roomName) => {
-            var classes = "btn btn-default";
-            if (roomName === this.props.roomName) {
-              classes += " current_room";
-            }
-            return <button key={roomName} className={classes} onClick={() => this.props.onSwitch(roomName)}>
-              Room {roomName}
-            </button>
-          })}
-        </div>
-      </div>
-    )
-  }
+function ChatRoomSelector (props) {
+  return (
+    <div id="room_buttons" className="text-center">
+      {props.rooms.map((roomName) => {
+        var classes = "btn btn-default";
+        if (roomName === props.roomName) {
+          classes += " current_room";
+        }
+        return <button key={roomName} className={classes} onClick={() => props.onSwitch(roomName)}>
+          Room {roomName}
+        </button>
+      })}
+    </div>
+  )
 }
 
 class App extends React.Component {
@@ -127,8 +135,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       socket: io(),
-      rooms: ["Unus", "Duo", "Tres", "Quattuor"],
-      roomName: "Unus"
+      rooms: ["College", "Horizons", "High School", "Stuffs"],
+      roomName: "College",
+      username: "Guest",
+      usernametemp: "Guest"
     };
   }
 
@@ -137,10 +147,10 @@ class App extends React.Component {
     this.state.socket.on('connect', () => {
       console.log('connected');
       var user = this.state.username;
-      // while (!user || user.length < 1) {
-        user = prompt("Enter a username: ");
-        this.setState({username: user});
-      // }
+      // // while (!user || user.length < 1) {
+      // user = prompt("Enter a username: ");
+      // this.setState({username: user});
+      // // }
       this.state.socket.emit('username', this.state.username);
       this.state.socket.emit('room', this.state.roomName);
     });
@@ -149,28 +159,50 @@ class App extends React.Component {
       alert(message);
     });
   }
-
   join(room) {
     // console.log(room);
     this.setState({roomName: room});
     this.state.socket.emit('room', room);
-    // console.log('reaches here in join');
+    console.log('reaches here in join');
   }
-
+  handleSubmitUsername(e) {
+    e.preventDefault();
+    // console.log('sends new username');
+    this.setState({username: this.state.usernametemp});
+    // this.state.socket.emit('changedusername', this.state.usernametemp);
+    this.state.socket.emit('username', this.state.usernametemp);
+  }
+  handleUsername(e) {
+    var user = e.target.value;
+    this.setState({usernametemp: user});
+    // console.log('adds to username', this.state.username);
+  }
   render() {
     return (
       <div>
         <h1 id="title">React Chat</h1>
+        <h3>Logged in as: {this.state.username}</h3>
+        {this.state.username==="Guest" && <form id="login" onSubmit={(e) => {this.handleSubmitUsername(e)}}>
+          <input
+            type="text"
+            placeholder="Enter Username..."
+            value={this.state.usernametemp}
+            onChange={(e) => {this.handleUsername(e)}}
+          />
+          <input
+            type="submit"
+            value="Save Username"
+          />
+        </form>}
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName}
           onSwitch={(room) => this.join(room)} />
+        <ChatRoom socket={this.state.socket} roomName={this.state.roomName}
+          username={this.state.username} />
 
-        {this.state.roomName !== "No room selected!" &&
-          <ChatRoom socket={this.state.socket} roomName={this.state.roomName}
-            username={this.state.username} />
-        }
       </div>
     );
   }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
+// ReactDOM.render(<WholeApp />, document.getElementById('root'));

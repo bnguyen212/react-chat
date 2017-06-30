@@ -35,12 +35,20 @@ app.get('/', (req, res) => {
 // Socket handler
 io.on('connection', socket => {
   console.log('connected');
+
   socket.on('username', username => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
     }
+    var oldUsername = socket.username;
     socket.username = String(username);
   });
+  // socket.on('changedusername', username => {
+  //   socket.to(socket.room).emit('message', {
+  //     username: 'System',
+  //     content: `${socket.username} has changed username to: ${username}`
+  //   });
+  // })
 
   socket.on('room', requestedRoom => {
     if (!socket.username) {
@@ -60,6 +68,9 @@ io.on('connection', socket => {
         username: 'System',
         content: `${socket.username} has joined`
       });
+      io.to(requestedRoom).emit('newuser', {
+        username: socket.username
+      });
     });
   });
 
@@ -67,7 +78,7 @@ io.on('connection', socket => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    console.log('server received message');
+    // console.log('server received message');
     io.to(socket.room).emit('message', {
       username: socket.username,
       content: message
@@ -75,18 +86,31 @@ io.on('connection', socket => {
   });
 
   //track typing:
+  //object with username and timeout key-value pairs
+  var typingPeople = {};
+
   socket.on('typing', () => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    console.log('receives typing');
+    // console.log('receives typing');
     socket.to(socket.room).emit('typing', { username: socket.username } );
+
+    //create new timeout
+    if (typingPeople[socket.username]) {
+      clearTimeout(typingPeople[socket.username]);
+    }
+    var timeout = setTimeout(() => {
+      //stop typing
+      socket.to(socket.room).emit('stoptyping', { username: socket.username});
+    }, 500);
+    typingPeople[socket.username] = timeout;
   });
   socket.on('stoptyping', () => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    console.log('receives stop of typing');
+    // console.log('receives stop of typing');
     socket.to(socket.room).emit('stoptyping', { username: socket.username });
   });
 });
