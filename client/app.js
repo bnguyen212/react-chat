@@ -192,7 +192,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 id="title">AmandaChat</h1>
+        <h1 id="title">ReactChat</h1>
         <div id="login_box">
           <h3 className="text-center">logged in as: {this.state.username}</h3>
           {this.state.username==="Guest" &&
