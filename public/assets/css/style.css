@@ -1,0 +1,72 @@
+html, body {
+  height: 100%;
+  padding: 10px 60px 10px 60px;
+
+}
+
+h1{
+  text-align: center;
+  /*width: 100%;*/
+  margin: 20px 0 30px 0;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 72px;
+  color: #ff3b3f;
+  font-weight: bold;
+}
+
+h4{
+  color: #a9a9a9;
+}
+
+.btn {
+  background-color: #ff3b3f;
+}
+p {
+  font-family: 'Exo 2';
+  font-size: medium;
+}
+.nav-tabs{
+  border-bottom: none;
+}
+
+body {
+  background-color: #efefef;
+}
+
+.chatdiv{
+  background-color: white;
+  border: 8px solid #caebf2;
+  padding: 20px 30px 0px 20px;
+  height: 700px;
+  position: relative;
+  -moz-box-shadow:    inset 0 0 6px #000000;
+  -webkit-box-shadow: inset 0 0 6px #000000;
+  box-shadow:         inset 0 0 6px #000000;
+}
+
+.inputtext {
+  position: absolute;
+  bottom: 0px;
+  left: 5px;
+  right:5px;
+  /*width:90%;*/
+  /*align-self: center;*/
+}
+
+.nav-tabs>li>a{
+  background-color: #caebf2;
+  opacity: .85;
+  color: #a9a9a9;
+  font-family: 'Exo 2';
+  font-weight: bold;
+}
+
+.form-group{
+  display:flex;
+}
+
+.nav-tabs>li.active>a:focus{
+  background-color: #caebf2;
+  opacity: 1;
+  color: #ff3b3f;
+}

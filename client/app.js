@@ -118,12 +118,12 @@ class ChatRoom extends React.Component{
   }
   render() {
 
-    const divStyle = {
-        border: '1px solid black',
-        padding: '5px 20px 20px 5px',
-        height: '500px',
-        position: 'relative'
-    };
+    // const divStyle = {
+    //     border: '1px solid black',
+    //     padding: '5px 20px 20px 5px',
+    //     height: '500px',
+    //     position: 'relative'
+    // };
     var typingstr = "";
     if(this.state.typingusers.length>0){
       typingstr = "is typing";
@@ -144,28 +144,28 @@ class ChatRoom extends React.Component{
     if(this.props.username){
       return (
         <div>
-        <div style={divStyle}>
+        <div className="chatdiv">
           <h4>Welcome to {this.props.roomName}, {this.props.username}</h4>
           <ul style={{paddingLeft: "10px"}}>
             {this.state.messages.map( userline.bind(this))}
 
           </ul>
-          <span style={{bottom:"0", paddingLeft:"5px", position:"absolute", color:"#BBBBBB", fontSize:"larger"}}>{typingstr}</span>
-        </div>
-        <div>
-          <form onSubmit={this.handleSubmit}>
-            <div className="form-group">
-            <input type="text" className="form-control" value={this.state.message} onChange={this.handleChange} placeholder="Enter message..." style={{height:"50px"}}/>
-            <input type="submit" value="Submit" style={{float:"right"}}/>
+          <div className="inputtext">
+            <span style={{bottom:"0", paddingLeft:"5px", color:"#BBBBBB", fontSize:"larger"}}>{typingstr}</span>
+            <form onSubmit={this.handleSubmit}>
+              <div className="form-group">
+                <input type="text" className="form-control" value={this.state.message} onChange={this.handleChange} placeholder="Enter message..." style={{height:"50px"}}/>
+                <input type="submit" value="Submit" className="btn btn-danger"/>
+              </div>
+            </form>
           </div>
-          </form>
         </div>
       </div>
     )
     }else{
       return (
         <div>
-          <div style={divStyle}>
+          <div className="chatdiv">
             <h4>Welcome to {this.props.roomName}!    Please provide a username.</h4>
             <ul style={{paddingLeft: "10px"}}>
               {this.state.messages.map( msgobj => <p key={_.uniqueId()} >{msgobj.username}: {msgobj.content}</p>)}
@@ -192,7 +192,7 @@ class App extends React.Component {
       // YOUR CODE HERE (1)
       roomName: "Party Place",
       username: "",
-      rooms: ["Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"]
+      rooms: ["Room 1", "Room 2", "Room 3", "Room 4"]
     };
   }
 
@@ -230,7 +230,7 @@ class App extends React.Component {
     return (
 
       <div>
-        <h1>React Chat</h1>
+        {/* <h1>React Chat</h1> */}
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join.bind(this)}/>
         <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
       </div>
