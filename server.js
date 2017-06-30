@@ -105,7 +105,7 @@ io.on('connection', socket => {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
     // console.log('server received message');
->>>>>>> master
+
     io.to(socket.room).emit('message', {
       username: socket.username,
       content: message
