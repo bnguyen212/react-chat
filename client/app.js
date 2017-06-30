@@ -144,8 +144,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       socket: io(),
-      rooms: ["College", "Horizons", "High School", "Stuffs"],
-      roomName: "College",
+      rooms: ["Blue", "Red", "Green", "Jay"],
+      roomName: "Blue",
       username: "Guest",
       usernametemp: "Guest"
     };
