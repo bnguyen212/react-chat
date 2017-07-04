@@ -67,7 +67,7 @@ io.on('connection', socket => {
     }
     socket.to(socket.room).emit('message', {
       username: socket.username,
-      content: message
+      content: message.content,
     });
   })
 });
