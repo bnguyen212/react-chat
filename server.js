@@ -70,6 +70,20 @@ io.on('connection', socket => {
       content: message
     });
   })
+
+  socket.on('typing', data => {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).broadcast.emit('typing', data);
+  });
+
+  socket.on('stop typing', data => {
+    if (!socket.room) {
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).broadcast.emit('stop typing', data);
+  });
 });
 
 const port = process.env.PORT || 3000;
