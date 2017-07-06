@@ -36,14 +36,25 @@ app.get('/', (req, res) => {
 io.on('connection', socket => {
   console.log('connected');
   socket.on('username', username => {
+    var user = username.trim()
+    user = user.charAt(0).toUpperCase() + user.slice(1);
     if (!username || !username.trim()) {
+      setTimeout(() => socket.disconnect(true), 2000);
       return socket.emit('errorMessage', 'No username!');
     }
-    socket.username = String(username);
+    if (allUsers.indexOf(user) > -1){
+      setTimeout(() => socket.disconnect(true), 2000);
+      return socket.emit('errorMessage', 'Username is taken!')
+    }else{
+
+      allUsers.push(user)
+      socket.username = String(user);
+    }
   });
 
   socket.on('room', requestedRoom => {
     if (!socket.username) {
+      console.log('disconnecting');
       return socket.emit('errorMessage', 'Username not set!');
     }
     if (!requestedRoom) {
@@ -58,9 +69,22 @@ io.on('connection', socket => {
         username: 'System',
         content: `${socket.username} has joined`
       });
+      socket.emit('message', {
+        username: 'System',
+        content: `Good day, ${socket.username}! Welcome to React Chat! Send a message to start chatting! `
+      });
     });
   });
-
+  socket.on('typing', () => {
+    socket.to(socket.room).emit('typing',{
+      username: socket.username
+    })
+  })
+  socket.on('notTyping', () => {
+    socket.to(socket.room).emit('notTyping',{
+      username: socket.username
+    })
+  })
   socket.on('message', message => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
@@ -70,8 +94,14 @@ io.on('connection', socket => {
       content: message
     });
   })
-});
+  socket.on('disconnect', (reason)=>{
+    if (socket.username){
+      allUsers.splice(allUsers.indexOf(socket.username),1)
+    }
 
+  })
+});
+let allUsers = [];
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
   console.log(`Server listening on port ${port}!`);
