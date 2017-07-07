@@ -51,6 +51,10 @@ io.on('connection', socket => {
     }
     if (socket.room) {
       socket.leave(socket.room);
+      socket.to(socket.room).emit('message', {
+        username: 'System',
+        content: `${socket.username} has left`
+      });
     }
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
@@ -61,6 +65,7 @@ io.on('connection', socket => {
     });
   });
 
+
   socket.on('message', message => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
@@ -70,7 +75,17 @@ io.on('connection', socket => {
       content: message
     });
   })
+
+  socket.on('typing', message => {
+    socket.to(socket.room).emit('typing', socket.username);
+  });
+
+  socket.on('stop typing', message => {
+    socket.to(socket.room).emit('stop typing', socket.username);
+  });
 });
+
+
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
