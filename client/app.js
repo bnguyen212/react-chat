@@ -111,7 +111,7 @@ class ChatRoom extends React.Component {
             console.log('EQUAL: ', username === this.state.username);
 
             if (username === "System") {
-              classes += " italic";
+              classes += " italic grey";
             } else if (username === this.state.username) {
               classes += " my_msg text-right"
             }
@@ -135,7 +135,7 @@ class ChatRoom extends React.Component {
             <input
               id="new_message_text"
               type="text"
-              placeholder="Type message..."
+              placeholder="Type in your answer(s)..."
               value={this.state.message}
               onChange={(e) => {this.handleChange(e)}}
               className="form-control"

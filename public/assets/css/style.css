@@ -171,7 +171,7 @@
   font-weight: 400;
 }
 .my_msg {
-  color: lightgrey;
+  color: white;
 }
 .msg_username {
   font-style: bold;
@@ -220,4 +220,7 @@
 }
 .italic {
   font-style: italic;
+}
+.grey {
+  color: lightgrey;
 }
