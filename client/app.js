@@ -85,6 +85,7 @@ class ChatRoom extends React.Component {
     // console.log('emitted typing')
   }
   render() {
+    console.log('ROOM', this.state.roomName,'IMG',this.props.imgSrc);
     return (
       <div id="messages_box">
         <h3 className="text-center bold">Problem {this.state.roomName}</h3>
@@ -181,10 +182,9 @@ class App extends React.Component {
       usernametemp: "Change Username...",
       canChangeUsername: true,
       problems: [
-        "../img/problem0.jpg",
         "../img/problem1.png",
-        "../img/problem2.png",
-        "../img/problem3.png"
+        "../img/sine-graph-problem1.png",
+        "../img/sine-graph-problem2.png",
       ]
     };
   }
@@ -273,7 +273,7 @@ class App extends React.Component {
         <ChatRoom socket={this.state.socket}
           roomName={this.state.roomName}
           username={this.state.username}
-          imgSrc={this.state.problems[parseInt(this.state.roomName)] || "../img/problem2.png"} />
+          imgSrc={this.state.problems[parseInt(this.state.roomName) - 1] || '../sine-graph-problem2.png'} />
 
       </div>
     );
