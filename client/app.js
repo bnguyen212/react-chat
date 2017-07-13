@@ -98,7 +98,7 @@ class ChatRoom extends React.Component {
         </h4>
 
         <div id="problemPic">
-          <img src={this.props.imgSrc} alt=" [did not load problem correctly] " />
+          <img src={this.props.imgSrc} alt=" [no problem on this page] " />
         </div>
 
         <div id="messages">
@@ -182,9 +182,12 @@ class App extends React.Component {
       usernametemp: "Change Username...",
       canChangeUsername: true,
       problems: [
+        "../img/calculus-derivs-e.png",
         "../img/problem1.png",
+        "../img/frequency-period-units.png",
         "../img/sine-graph-problem1.png",
         "../img/sine-graph-problem2.png",
+        "../img/cosine-graph.png"
       ]
     };
   }
