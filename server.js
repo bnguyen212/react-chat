@@ -104,7 +104,7 @@ io.on('connection', socket => {
     users.push(newer);
     roomUsers[socket.room] = users;
     io.to(socket.room).emit('updateusers', roomUsers[socket.room]);
-    socket.emit('usernamechange');
+    socket.emit('usernamechange', newer);
   });
 
   socket.on('message', message => {

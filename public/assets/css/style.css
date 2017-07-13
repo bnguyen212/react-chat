@@ -131,7 +131,7 @@
   background-color: #313636;
   /*border-color: #505050;*/
   font-weight: 700;
-  font-size: 20px;
+  font-size: 15px;
   border: 5px outset #505050;
 }
 #room_buttons button:focus, .current_room {
@@ -190,6 +190,18 @@
   flex: 1;
   margin-left: 5px;
   background: linear-gradient(#008c8c 10%, #03afaf 100%);
+}
+
+#problemPic {
+  display: flex;
+  justify-content: center;
+}
+#problemPic img {
+  /*margin: 1% 0 3% 25%;*/
+  margin: 2% 12%;
+  height: 300px;
+  flex: 1;
+  flex-basis: inherit;
 }
 
 /*.current_room {

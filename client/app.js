@@ -14,7 +14,7 @@ class ChatRoom extends React.Component {
       users: ['this is a user']
     }
     // console.log('STATE: ',this.state);
-
+    console.log(props.imgSrc);
   }
   componentDidMount() {
     this.state.socket.on('message', (msgData) => {
@@ -57,6 +57,10 @@ class ChatRoom extends React.Component {
       //   this.setState({users: newUserArr});
       // // }
       this.setState({users: data})
+    });
+    this.state.socket.on('usernamechange', (newUsername) => {
+      console.log('reached receive username change');
+      this.setState({username: newUsername});
     })
   }
   componentWillReceiveProps(nextProps) {
@@ -83,21 +87,28 @@ class ChatRoom extends React.Component {
   render() {
     return (
       <div id="messages_box">
-        <h3 className="text-center bold">Room {this.state.roomName} Messages</h3>
+        <h3 className="text-center bold">Problem {this.state.roomName}</h3>
         <h4 className="text-center"> Current users: {this.state.users.map((user, index) => {
           var returnUser = user;
           if (index !== this.state.users.length-1) {
             returnUser += ", ";
           }
-          return <span className="bold" key={index}> {returnUser}</span>
-        })}
-      </h4>
+          return <span className="bold" key={index}> {returnUser}</span>  })}
+        </h4>
+
+        <div id="problemPic">
+          <img src={this.props.imgSrc} alt=" [did not load problem correctly] " />
+        </div>
+
         <div id="messages">
 
           {this.state.messages.map((msg, index) => {
             var classes="single_message";
             var bp=msg.indexOf(':');
             var username = msg.substring(0, bp);
+            console.log('MSG: ',msg, 'USER: ', username, 'STATE: ',this.state.username);
+            console.log('EQUAL: ', username === this.state.username);
+
             if (username === "System") {
               classes += " italic";
             } else if (username === this.state.username) {
@@ -105,7 +116,7 @@ class ChatRoom extends React.Component {
             }
 
             var message = msg.substring(bp+2, msg.length);
-            console.log(classes);
+            // console.log(classes);
             return (
               <p key={index} className={classes}>
                 <span className="msg_username">{username}:  </span>
@@ -151,7 +162,7 @@ function ChatRoomSelector (props) {
           classes += " current_room";
         }
         return <button key={roomName} className={classes} onClick={() => props.onSwitch(roomName)}>
-          Room {roomName}
+          Problem {roomName}
         </button>
       })}
     </div>
@@ -164,11 +175,17 @@ class App extends React.Component {
     var defaultUsername = "Guest"+Math.round(Math.random()*100);
     this.state = {
       socket: io(),
-      rooms: ["1", "2", "3", "4"],
-      roomName: "1",
+      rooms: [1, 2, 3, 4, 5, 6, 7],
+      roomName: 1,
       username: defaultUsername,
       usernametemp: "Change Username...",
-      canChangeUsername: true
+      canChangeUsername: true,
+      problems: [
+        "../img/problem0.jpg",
+        "../img/problem1.png",
+        "../img/problem2.png",
+        "../img/problem3.png"
+      ]
     };
   }
 
@@ -189,9 +206,9 @@ class App extends React.Component {
       alert(message);
     });
 
-    this.state.socket.on('usernamechange', () => {
+    this.state.socket.on('usernamechange', (newUsername) => {
       console.log('reached receive username change');
-      this.setState({canChangeUsername: false});
+      this.setState({canChangeUsername: false, username: newUsername});
     })
   }
   join(room) {
@@ -214,7 +231,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 id="title">ReactChat
+        <h1 id="title">PhysicsChat
           <div>
             <h1 id="one">.</h1>
             <h1 id="two">.</h1>
@@ -250,10 +267,13 @@ class App extends React.Component {
             </form>
           }
         </div>
-        <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName}
+        <ChatRoomSelector rooms={this.state.rooms}
+          roomName={this.state.roomName}
           onSwitch={(room) => this.join(room)} />
-        <ChatRoom socket={this.state.socket} roomName={this.state.roomName}
-          username={this.state.username} />
+        <ChatRoom socket={this.state.socket}
+          roomName={this.state.roomName}
+          username={this.state.username}
+          imgSrc={this.state.problems[parseInt(this.state.roomName)] || "../img/problem2.png"} />
 
       </div>
     );
