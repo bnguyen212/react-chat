@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 
 // Socket handler
 io.on('connection', socket => {
-  console.log('connected');
+  console.log('connected on socket id ' + socket.id);
   socket.on('username', username => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
@@ -54,7 +54,8 @@ io.on('connection', socket => {
     }
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
-      socket.to(requestedRoom).emit('message', {
+      console.log('emitting that user has joined');
+      io.to(requestedRoom).emit('message', {
         username: 'System',
         content: `${socket.username} has joined`
       });
@@ -65,12 +66,22 @@ io.on('connection', socket => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    socket.to(socket.room).emit('message', {
+    console.log('server message: ' + message);
+    io.to(socket.room).emit('message', {
       username: socket.username,
       content: message
     });
-  })
+  });
+
+  socket.on('typing', username => {
+    return io.to(socket.room).emit('typing', username)
+  });
+
+  socket.on('stop typing', username => {
+    return io.to(socket.room).emit('stop typing', username);
+  });
 });
+
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
