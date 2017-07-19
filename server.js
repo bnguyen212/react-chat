@@ -54,7 +54,7 @@ io.on('connection', socket => {
     }
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
-      socket.to(requestedRoom).emit('message', {
+      io.to(requestedRoom).emit('message', {
         username: 'System',
         content: `${socket.username} has joined`
       });
@@ -65,7 +65,7 @@ io.on('connection', socket => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
-    socket.to(socket.room).emit('message', {
+    io.to(socket.room).emit('message', {
       username: socket.username,
       content: message
     });
