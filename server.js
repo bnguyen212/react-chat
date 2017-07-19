@@ -55,8 +55,8 @@ io.on('connection', socket => {
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
       socket.to(requestedRoom).emit('message', {
-        username: 'System',
-        content: `${socket.username} has joined`
+        username: `${socket.username}`,
+        content: `Hello! I just joined the room.`
       });
     });
   });
@@ -70,7 +70,18 @@ io.on('connection', socket => {
       content: message
     });
   })
+
+  socket.on('typing', username => {
+      console.log("On server");
+      socket.to(socket.room).emit('typing', username);
+  })
+
+  socket.on('stop-typing', username => {
+      socket.to(socket.room).emit('stop-typing', username);
+  })
 });
+
+
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
