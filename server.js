@@ -140,9 +140,9 @@ io.on('connection', socket => {
     socket.to(socket.room).emit('stoptyping', { username: socket.username });
   });
   socket.on('disconnect', ()  => {
-    var oldUsers = roomUsers[socket.room];
-    oldUsers.splice(oldUsers.indexOf(socket.username), 1);
-    roomUsers[socket.room] = oldUsers;
+    // var oldUsers = roomUsers[socket.room];
+    // oldUsers.splice(oldUsers.indexOf(socket.username), 1);
+    // roomUsers[socket.room] = oldUsers;
   })
 });
 
