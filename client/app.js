@@ -7,9 +7,9 @@ class App extends React.Component {
     this.state = {
       socket: io(),
       // YOUR CODE HERE (1)
-      roomName: 'Room 1',
+      roomName: 'Welcome Room',
       username: '',
-      rooms: ["Room 1", "Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"]
+      rooms: ["Welcome Room", "Good Eats", "Night Owls", "Coffee Connoisseurs", "Do You Even Lift?"]
     };
   }
 
@@ -39,7 +39,8 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>React Chat</h1>
+        <h1>Get A (Chat)Room</h1>
+        <p>Get A (Chat)Room is a place for you to plan social events interested in the same activity as you!</p>
         <div>
           <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={(room) => this.join(room)}/>
           <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
@@ -60,7 +61,7 @@ class ChatRoom extends React.Component {
   }
   componentDidMount() {
     this.props.socket.on("message", (message) => {
-      this.state.messages.push(`${message.username}: ${message.content}`);
+      this.state.messages.push({username: message.username, content: message.content});
       this.setState({messages: this.state.messages});
     });
 
@@ -94,7 +95,7 @@ class ChatRoom extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     this.props.socket.emit('message', this.state.message);
-    this.state.messages.push(`${this.props.username}: ${this.state.message}`);
+    this.state.messages.push({username: message.username, content: message.content});
     this.setState({messages: this.state.messages, message: ""});
     this.props.socket.emit('stop typing', {username: this.props.username});
   }
@@ -104,18 +105,18 @@ class ChatRoom extends React.Component {
       <div className='chatroom'>
         <h1>{this.props.roomName}</h1>
         <ul>
-          {this.state.messages.map(msg => {
+          {this.state.messages.map(msgObj => {
             return (
               <div className='row'>
-                {msg}
+                <p><b>{msgObj.username}:</b>{msgObj.content}</p>
               </div>
             );
           })}
         </ul>
         <form onSubmit={this.handleSubmit.bind(this)}>
           <div>{this.state.typing.map(user => {
-              return user + " is typing..."
-            })}
+            return user + " is typing..."
+          })}
           </div>
           <div className="form-group">
             <input type="text" name="message" value={this.state.message} placeholder="Your message..." onChange={e => this.messageChange(e)}></input>

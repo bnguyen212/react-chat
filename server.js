@@ -58,6 +58,13 @@ io.on('connection', socket => {
     }
     socket.room = requestedRoom;
     socket.join(requestedRoom, () => {
+      if(requestedRoom === 'Welcome Room') {
+        socket.emit('message', {
+          username: 'System',
+          content: `Welcome ${socket.username}! You are in the Welcome Room. You can switch to a new room using the tabs above,
+          to chat with people feeling the same vibes as you. Now that you got the rundown, get a (chat)room!`
+        });
+      }
       socket.to(requestedRoom).emit('message', {
         username: 'System',
         content: `${socket.username} has joined`
