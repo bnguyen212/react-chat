@@ -144,19 +144,19 @@ class ChatRoom extends React.Component{
     if(this.props.username){
       return (
         <div>
-        <div className="chatdiv">
-          <h4>Welcome to {this.props.roomName}, {this.props.username}</h4>
-          <ul style={{paddingLeft: "10px"}}>
-            {this.state.messages.map( userline.bind(this))}
+          <div className="chatdiv">
+            <h4>Welcome to {this.props.roomName}, {this.props.username}</h4>
+            <ul style={{paddingLeft: "10px"}}>
+              {this.state.messages.map( userline.bind(this))}
 
-          </ul>
-          <div className="inputtext">
-            <span style={{bottom:"0", paddingLeft:"5px", color:"#BBBBBB", fontSize:"larger"}}>{typingstr}</span>
-            <form onSubmit={this.handleSubmit}>
-              <div className="form-group">
-                <input type="text" className="form-control" value={this.state.message} onChange={this.handleChange} placeholder="Enter message..." style={{height:"50px"}}/>
-                <input type="submit" value="Submit" className="btn btn-danger"/>
-              </div>
+            </ul>
+            <div className="inputtext">
+              <span style={{bottom:"0", paddingLeft:"5px", color:"#BBBBBB", fontSize:"larger"}}>{typingstr}</span>
+              <form onSubmit={this.handleSubmit}>
+                <div className="form-group">
+                  <input type="text" className="form-control" value={this.state.message} onChange={this.handleChange} placeholder="Enter message..." style={{height:"50px"}}/>
+                  <input type="submit" value="Submit" className="btn btn-danger"/>
+                </div>
             </form>
           </div>
         </div>
