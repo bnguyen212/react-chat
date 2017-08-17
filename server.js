@@ -32,11 +32,12 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
+
+// Socket handler
+
 var roomUsers = {};
 var typingPeople = {};
 
-
-// Socket handler
 io.on('connection', socket => {
   console.log('connected');
 

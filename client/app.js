@@ -97,9 +97,26 @@ class ChatRoom extends React.Component {
           return <span className="bold" key={index}> {returnUser}</span>  })}
         </h4>
 
-        <div id="problemPic">
-          <img src={this.props.imgSrc} alt=" [no problem on this page] " />
-        </div>
+        <form id="add_picture" onSubmit={(e) => {this.handleSubmit(e)}}>
+          <input
+            id="new_message_text"
+            type="text"
+            placeholder="Type in your answer(s)..."
+            value={this.state.message}
+            onChange={(e) => {this.handleChange(e)}}
+            className="form-control"
+          />
+          <input
+            id="new_message_btn"
+            type="submit"
+            value="Send"
+            className="btn btn-primary"
+          />
+        </form>
+
+      <div id="problemPic">
+        <img src={this.props.imgSrc} alt=" [no problem on this page] " />
+      </div>
 
         <div id="messages">
 
