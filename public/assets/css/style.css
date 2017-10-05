@@ -1,0 +1,23 @@
+/* `view` is the div in which we render chat messages */
+.view {
+  margin-top: 20px;
+  padding: 50px 25px 10px 25px;
+  background-color: dodgerblue;
+  border: 6px solid black;
+}
+
+/* `message` is a div containing a message rendered in `view` */
+.message {
+  margin-top: 5px;
+  font-weight: bold;
+  color: white;
+}
+
+/* `messageInput` is the box in which the user types the message to send */
+.view .messageInput {
+  width: 70%;
+}
+
+.message-container {
+
+}
