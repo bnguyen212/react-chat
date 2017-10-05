@@ -1,15 +1,15 @@
-const express           = require('express');
-const path              = require('path');
-const compress          = require('compression');
+const express               = require('express');
+const path                  = require('path');
+const compress              = require('compression');
 
 const webpack               = require('webpack');
 const webpackDevMiddleware  = require("webpack-dev-middleware");
 const webpackHotMiddleware  = require('webpack-hot-middleware');
 const config                = require('./webpack.config');
 
-const app               = express();
-const server            = require('http').Server(app);
-const io                = require('socket.io')(server);
+const app                   = express();
+const server                = require('http').Server(app);
+const io                    = require('socket.io')(server);
 
 const compiler = webpack(config);
 app.use(webpackDevMiddleware(compiler, {
@@ -34,7 +34,6 @@ app.get('/', (req, res) => {
 
 // Socket handler
 io.on('connection', socket => {
-  console.log('connected');
   socket.on('username', username => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
@@ -59,6 +58,7 @@ io.on('connection', socket => {
         content: `${socket.username} has joined`
       });
     });
+
   });
 
   socket.on('message', message => {
