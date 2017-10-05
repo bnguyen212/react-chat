@@ -1,15 +1,15 @@
-const express           = require('express');
-const path              = require('path');
-const compress          = require('compression');
+const express               = require('express');
+const path                  = require('path');
+const compress              = require('compression');
 
 const webpack               = require('webpack');
 const webpackDevMiddleware  = require("webpack-dev-middleware");
 const webpackHotMiddleware  = require('webpack-hot-middleware');
 const config                = require('./webpack.config');
 
-const app               = express();
-const server            = require('http').Server(app);
-const io                = require('socket.io')(server);
+const app                   = express();
+const server                = require('http').Server(app);
+const io                    = require('socket.io')(server);
 
 const compiler = webpack(config);
 app.use(webpackDevMiddleware(compiler, {
@@ -66,8 +66,7 @@ io.on('connection', socket => {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
     socket.to(socket.room).emit('message', {
-      username: socket.username,
-      content: message
+      username: socket.username, content: message
     });
   })
 });
