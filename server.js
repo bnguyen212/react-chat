@@ -36,7 +36,9 @@ app.get('/', (req, res) => {
 io.on('connection', socket => {
   console.log('connected');
   socket.on('username', username => {
+    console.log("check username", username);
     if (!username || !username.trim()) {
+      console.log("USERNAME", username);
       return socket.emit('errorMessage', 'No username!');
     }
     socket.username = String(username);
@@ -69,6 +71,13 @@ io.on('connection', socket => {
       username: socket.username,
       content: message
     });
+  });
+
+  socket.on('typing', username => {
+    if(!socket.room){
+      return socket.emit('errorMessage', 'No rooms joined!');
+    }
+    socket.to(socket.room).emit('typing', username);
   })
 });
 
