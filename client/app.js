@@ -21,9 +21,6 @@ class ChatRoomSelector extends React.Component {
           }
                             )
         }
-        {/* /* <li role="presentation" className="active"><a href="#">Home</a></li>
-        <li role="presentation"><a href="#">Profile</a></li>
-        <li role="presentation"><a href="#">Messages</a></li> */}
       </ul>
     );
   }
@@ -35,12 +32,18 @@ class ChatRoom extends React.Component {
     this.state = {
       message: '',
       messages: [],
+      typingUsers: [],
     }
     this.handleMessage = this.handleMessage.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleMessage(e) {
+    if(e.target.value !== "") {
+      this.props.socket.emit('typing');
+    } else {
+      this.props.socket.emit('stop typing');
+    }
     this.setState({
       message: e.target.value,
     });
@@ -75,6 +78,11 @@ class ChatRoom extends React.Component {
         }
       ));
     });
+    this.props.socket.on('typing', (typingArray) => {
+      this.setState({
+        typingUsers: typingArray,
+      });
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -95,6 +103,11 @@ class ChatRoom extends React.Component {
               {messageObj.username}: {messageObj.content}
             </div>
           );
+        })}
+        {this.state.typingUsers.map( (username) => {
+          return (
+            <span className="typing"> {username} is typing... </span>
+          )
         })}
         <form
            onSubmit={this.handleSubmit}>

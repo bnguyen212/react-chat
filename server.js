@@ -32,6 +32,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
+let typingUsers = [];
+
 // Socket handler
 io.on('connection', socket => {
   console.log('connected');
@@ -69,7 +71,25 @@ io.on('connection', socket => {
       username: socket.username,
       content: message
     });
-  })
+  });
+
+  socket.on('typing', () => {
+    if(typingUsers.indexOf(socket.username) === -1) {
+      typingUsers = typingUsers.concat(socket.username);
+    }
+    io.emit('typing', typingUsers);
+  });
+
+  socket.on('stop typing', () => {
+    const userPosition = typingUsers.indexOf(socket.username);
+    if(userPosition === -1) {
+      socket.emit('errorMessage', "You weren't typing wtf?");
+    } else {
+      typingUsers = typingUsers.slice();
+      typingUsers.splice(userPosition, 1);
+      io.emit('typing', typingUsers);
+    }
+  });
 });
 
 const port = process.env.PORT || 3000;
