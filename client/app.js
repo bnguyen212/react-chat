@@ -7,19 +7,21 @@ class App extends React.Component {
     this.state = {
       socket: io(),
       // YOUR CODE HERE (1)
-      roomName: "no roomname",
-      username: "no username",
+      roomName: "CdT",
+      username: null,
+      rooms: ["Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"]
     };
+    this.join = this.join.bind(this)
   }
 
   componentDidMount() {
     // WebSockets Receiving Event Handlers
     this.state.socket.on('connect', () => {
-      console.log('connected');
       // YOUR CODE HERE (2)
       this.setState({username: prompt('What is your username?')})
       this.state.socket.emit('username', this.state.username);
-      console.log(this.state);
+      this.state.socket.emit('room', this.state.roomName)
+      console.log('connected:', this.state);
     });
 
     this.state.socket.on('errorMessage', message => {
@@ -29,24 +31,38 @@ class App extends React.Component {
   }
 
   join(room) {
-    // room is called with "Party Place"
-    console.log(room);
     this.setState({roomName: room})
-    this.state.socket.emit('room', room)
+    this.state.socket.emit('room', this.state.roomName)
   }
 
   render() {
     return (
       <div>
         <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={() => this.join("Party Place")}>
-          Join the Party Place
-        </button>
         <div>
           <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username} />
+          <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join} />
         </div>
       </div>
     );
+  }
+}
+
+class ChatRoomSelector extends React.Component {
+  render() {
+    return (
+    <ul className='nav nav-tabs'>
+      {this.props.rooms.map((r) => {
+      return (
+        <li
+          className={(r === this.props.roomName) ? 'active btn btn-default' : 'btn btn-default'}
+          onClick={() => this.props.onSwitch(r)}
+        >{r}
+        </li>
+      )
+      })}
+    </ul>
+    )
   }
 }
 
@@ -57,7 +73,6 @@ class ChatRoom extends React.Component {
       message: "",
       messages: [],
     }
-
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleMessageChange = this.handleMessageChange.bind(this)
   }
@@ -68,11 +83,9 @@ class ChatRoom extends React.Component {
     })
   }
 
-  componentWillReceiveProps() {
-    this.props.socket.on('room', (room) => {
-      if (room !== this.props.roomName)
-        this.setState({messages: []})
-    })
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.roomName !== this.props.roomName)
+      this.setState({messages: []})
   }
 
   handleMessageChange(e) {
@@ -113,10 +126,6 @@ class ChatRoom extends React.Component {
 }
 
 class Message extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     return (<li>{this.props.message}</li>)
   }
