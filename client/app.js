@@ -29,7 +29,8 @@ class ChatRoom extends React.Component{
       message: '',
       messages: [],
       editing: false,
-      timeOutId: false
+      timeOutId: false,
+      editMessage: ''
     }
     this.updateMessageInput = this.updateMessageInput.bind(this);
     this.handleMessageSubmit = this.handleMessageSubmit.bind(this);
@@ -44,6 +45,12 @@ class ChatRoom extends React.Component{
         messages: this.state.messages.concat(`${message.username}: ${message.content}`)
       });
     });
+
+    this.props.socket.on('edit',data => {
+      this.setState({
+        editMessage: data.editStart ? `${data.username} is typing...` : ''
+      })
+    });
   }
 
   componentWillReceiveProps(nextProps){
@@ -56,14 +63,13 @@ class ChatRoom extends React.Component{
 
   handleStartEdit(event){
     if(!this.state.timeOutId){
-      console.log('Typing');
       this.props.socket.emit('edit',{editStart:true,username:this.props.username,roomName:this.props.roomName});
     }
     else{
       clearTimeout(this.state.timeOutId);
     }
     this.setState({
-      timeOutId: setTimeout(()=>{this.props.socket.emit('edit',{editStart:false,username:this.props.username,roomName:this.props.roomName});console.log('Finished');this.setState({timeOutId: false});},1000)
+      timeOutId: setTimeout(()=>{this.props.socket.emit('edit',{editStart:false,username:this.props.username,roomName:this.props.roomName});this.setState({timeOutId: false});},1000)
     });
   }
 
@@ -76,6 +82,7 @@ class ChatRoom extends React.Component{
 
   handleMessageSubmit(event){
     event.preventDefault();
+    this.props.socket.emit('edit',{editStart:false,username:this.props.username,roomName:this.props.roomName})
     var message = this.state.message;
     this.setState({
       message: '',
@@ -91,7 +98,7 @@ class ChatRoom extends React.Component{
         <ul>
           {this.state.messages.map((message, index)=>(<li key={index}>{message}</li>))}
         </ul>
-        <p>{this.props.editMessage}</p>
+        <div className="typeMessageContainer">{this.state.editMessage}</div>
         <form onSubmit={this.handleMessageSubmit}>
           <input type="text" onChange={this.updateMessageInput} value={this.state.message}/>
           <input type="submit" value="Submit"/>
@@ -110,8 +117,7 @@ class App extends React.Component {
       socket: io(),
       roomName: "Party Place",
       username: '',
-      rooms: ["Party Place","Josh's Fun Time", "Sandwich Connoisseurs", "CdT"],
-      editMessage: ''
+      rooms: ["Party Place","Josh's Fun Time", "Sandwich Connoisseurs", "CdT"]
     };
   }
 
@@ -125,12 +131,6 @@ class App extends React.Component {
         this.state.socket.emit('username', newUsername);
         this.state.socket.emit('room',this.state.roomName);
       });
-    });
-
-    this.state.socket.on('edit',data => {
-      this.updateState({
-        editMessage: data.editStart ? `${data.username} is typing.` : ''
-      })
     });
 
     this.state.socket.on('errorMessage', message => {
@@ -151,7 +151,7 @@ class App extends React.Component {
       <div>
         <h1>React Chat</h1>
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={(roomName)=>this.join(roomName)}/>
-        <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username} editMessage={this.state.editMessage}/>
+        <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
       </div>
     );
   }

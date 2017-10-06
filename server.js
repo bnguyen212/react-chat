@@ -61,8 +61,7 @@ io.on('connection', socket => {
   });
 
   socket.on('edit', editData =>{
-    console.log(editData);
-    //socket.to(editData.roomName).emit('edit',editData);
+    socket.to(editData.roomName).emit('edit',editData);
   });
 
   socket.on('message', (message) => {
