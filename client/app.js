@@ -1,39 +1,157 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+class ChatRoomSelector extends React.Component{
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+    return (
+      <ul className="nav nav-tabs" >
+        {this.props.rooms.map((roomName)=>(
+          <li role="presentation" className={this.props.roomName===roomName ? "active" : ""}
+          onClick={()=>this.props.onSwitch(roomName)}>
+            <a href="#">
+              {roomName}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+}
+
+class ChatRoom extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      message: '',
+      messages: [],
+      editing: false,
+      timeOutId: false
+    }
+    this.updateMessageInput = this.updateMessageInput.bind(this);
+    this.handleMessageSubmit = this.handleMessageSubmit.bind(this);
+    this.handleStartEdit = this.handleStartEdit.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+  }
+
+  componentDidMount(){
+    this.props.socket.on('message',message=>{
+      this.setState({
+        message: '',
+        messages: this.state.messages.concat(`${message.username}: ${message.content}`)
+      });
+    });
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(this.props.roomName !== nextProps.roomName){
+      this.setState({
+        messages: []
+      })
+    }
+  }
+
+  handleStartEdit(event){
+    if(!this.state.timeOutId){
+      console.log('Typing');
+      this.props.socket.emit('edit',{editStart:true,username:this.props.username,roomName:this.props.roomName});
+    }
+    else{
+      clearTimeout(this.state.timeOutId);
+    }
+    this.setState({
+      timeOutId: setTimeout(()=>{this.props.socket.emit('edit',{editStart:false,username:this.props.username,roomName:this.props.roomName});console.log('Finished');this.setState({timeOutId: false});},1000)
+    });
+  }
+
+  updateMessageInput(event){
+    this.handleStartEdit(event);
+    this.setState({
+      message: event.target.value
+    });
+  }
+
+  handleMessageSubmit(event){
+    event.preventDefault();
+    var message = this.state.message;
+    this.setState({
+      message: '',
+      messages: this.state.messages.concat(`${this.props.username}: ${message}`)
+    },()=>{
+      this.props.socket.emit('message',{username:this.props.username,content:message});
+    });
+  }
+
+  render(){
+    return (
+      <div>
+        <ul>
+          {this.state.messages.map((message, index)=>(<li key={index}>{message}</li>))}
+        </ul>
+        <p>{this.props.editMessage}</p>
+        <form onSubmit={this.handleMessageSubmit}>
+          <input type="text" onChange={this.updateMessageInput} value={this.state.message}/>
+          <input type="submit" value="Submit"/>
+        </form>
+      </div>
+
+    )
+  }
+
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       socket: io(),
-      // YOUR CODE HERE (1)
+      roomName: "Party Place",
+      username: '',
+      rooms: ["Party Place","Josh's Fun Time", "Sandwich Connoisseurs", "CdT"],
+      editMessage: ''
     };
   }
 
   componentDidMount() {
-    // WebSockets Receiving Event Handlers
     this.state.socket.on('connect', () => {
       console.log('connected');
-      // YOUR CODE HERE (2)
+      var newUsername = prompt('Type in a username.');
+      this.setState({
+        username : newUsername
+      },()=>{
+        this.state.socket.emit('username', newUsername);
+        this.state.socket.emit('room',this.state.roomName);
+      });
+    });
+
+    this.state.socket.on('edit',data => {
+      this.updateState({
+        editMessage: data.editStart ? `${data.username} is typing.` : ''
+      })
     });
 
     this.state.socket.on('errorMessage', message => {
-      // YOUR CODE HERE (3)
+      alert(message);
     });
   }
 
   join(room) {
-    // room is called with "Party Place"
-    console.log(room);
+    this.setState({
+      roomName: room
+    },()=>{
+      this.state.socket.emit('room',this.state.roomName);
+    });
   }
 
   render() {
     return (
       <div>
         <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={() => this.join("Party Place")}>
-          Join the Party Place
-        </button>
+        <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={(roomName)=>this.join(roomName)}/>
+        <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username} editMessage={this.state.editMessage}/>
       </div>
     );
   }

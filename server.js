@@ -34,8 +34,7 @@ app.get('/', (req, res) => {
 
 // Socket handler
 io.on('connection', socket => {
-  console.log('connected');
-  socket.on('username', username => {
+  socket.on('username', (username) => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
     }
@@ -61,15 +60,21 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('message', message => {
+  socket.on('edit', editData =>{
+    console.log(editData);
+    //socket.to(editData.roomName).emit('edit',editData);
+  });
+
+  socket.on('message', (message) => {
     if (!socket.room) {
       return socket.emit('errorMessage', 'No rooms joined!');
     }
     socket.to(socket.room).emit('message', {
-      username: socket.username,
-      content: message
+      username: message.username,
+      content: message.content
     });
-  })
+  });
+
 });
 
 const port = process.env.PORT || 3000;
