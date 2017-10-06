@@ -6,47 +6,59 @@ class App extends React.Component {
     super(props);
     this.state = {
       socket: io(),
-      // YOUR CODE HERE (1)
-      roomName: "",
+      roomName: "Party Place",
       username: null,
+      rooms: ["Party Place", "Josh's Fun Time", "Sandwich Connoisseurs", "CdT"],
     };
+    this.join = this.join.bind(this)
   }
 
   componentDidMount() {
-    console.log("app mounted");
-    // WebSockets Receiving Event Handlers
+
     this.state.socket.on('connect', () => {
-      console.log('connected');
-      // YOUR CODE HERE (2)
-      var username = prompt("Please enter a username")
-      this.state.socket.emit('username', username)
-      this.setState({username,})
+      this.setState({
+        username: prompt("Please enter a username"),
+      })
+      this.state.socket.emit('username', this.state.username)
+      this.state.socket.emit('room', this.state.roomName)
     });
 
     this.state.socket.on('errorMessage', message => {
-      // YOUR CODE HERE (3)
       alert("Error: " + message)
     });
   }
 
   join(room) {
-    // room is called with "Party Place"
-    console.log(room);
+    // if (room.room) room = room.room;
+    console.log("Joining room: ", room);
     this.setState({
       roomName: room,
+    },()=>{
+      console.log("In room: ", this.state.roomName);
+      this.state.socket.emit('room', room)
     })
-    this.state.socket.emit('room', room)
+
   }
 
   render() {
     return (
       <div>
-        <h1>React Chat</h1>
-        <button className="btn btn-default" onClick={() => this.join("Party Place")}>
-          Join the Party Place
-        </button>
+        <h1>React Chat - {this.state.username}</h1>
         <div>
-          <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
+          <ChatRoomSelector
+            socket={this.state.socket}
+            rooms={this.state.rooms}
+            roomName={this.state.roomName}
+            username={this.state.username}
+            onSwitch={this.join}
+          />
+        </div>
+        <div>
+          <ChatRoom
+            socket={this.state.socket}
+            roomName={this.state.roomName}
+            username={this.state.username}
+          />
         </div>
       </div>
     );
@@ -69,16 +81,11 @@ class ChatRoom extends React.Component {
   handleSubmit(e) {
     e.preventDefault()
     this.props.socket.emit('message', this.state.message)
-    var newMessages = this.state.messages.slice();
-    newMessages.push({
-      message: this.state.message,
-      username: this.props.username,
-    })
+    var messages = [...this.state.messages,`${this.props.username}: ${this.state.message}`]
     this.setState({
       message: "",
-      messages: newMessages,
+      messages,
     })
-    console.log(this.state);
   }
 
   handleMessageChange(e) {
@@ -108,11 +115,9 @@ class ChatRoom extends React.Component {
   render() {
     return (
       <div>
-        <div>{this.props.roomName}</div>
-        <div>{this.props.username}</div>
         <div>
           <ul>
-            {this.state.messages.map( (item) => (<Message key={item} message={item} />) )}
+            {this.state.messages.map( (item) => (<Message key={Math.random()} message={item} />) )}
           </ul>
         </div>
         <form onSubmit={ (e) => this.handleSubmit(e) } >
@@ -132,13 +137,10 @@ class ChatRoom extends React.Component {
   }
 }
 
-class ChatRoomSelector extends React.Component {
-  
-}
-
 class Message extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {}
   }
 
   render() {
@@ -147,6 +149,46 @@ class Message extends React.Component {
     )
   }
 }
+
+class ChatRoomSelector extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+
+  render () {
+    return (
+      <div className="btn-toolbar" role="toolbar" aria-label="...">
+        {this.props.rooms.map( (room) => (<Room
+          key={room}
+          name={room}
+          onClick={ () => {this.props.onSwitch(room)} }
+          className={ (room === this.props.roomName) ? "active btn btn-default" : "btn btn-default" }
+        />) )}
+      </div>
+    )
+  }
+}
+
+class Room extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+
+  render() {
+    return (
+      <button
+        type="button"
+        className={this.props.className}
+        onClick={this.props.onClick}
+      >
+        {this.props.name}
+      </button>
+    )
+  }
+}
+
 
 
 
