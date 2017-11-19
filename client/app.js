@@ -149,7 +149,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>React Chat</h1>
+        <div id="header"><h1>React Chat</h1></div>
         <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={(roomName)=>this.join(roomName)}/>
         <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username}/>
       </div>
