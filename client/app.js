@@ -7,7 +7,15 @@ class App extends React.Component {
     this.state = {
       socket: io(),
       // YOUR CODE HERE (1)
+      roomName: "No room selected!",
+      username: null,
     };
+  }
+
+  getUsername(promptMessage){
+    let username = prompt(promptMessage);
+    this.state.socket.emit('username', username);
+    this.setState({username: username});
   }
 
   componentDidMount() {
@@ -15,10 +23,21 @@ class App extends React.Component {
     this.state.socket.on('connect', () => {
       console.log('connected');
       // YOUR CODE HERE (2)
+      this.getUsername("Hi there! What's your username?");
+      if(this.state.username){
+        //valid session
+      }
     });
 
     this.state.socket.on('errorMessage', message => {
       // YOUR CODE HERE (3)
+      if(message === "No username!"){
+        this.getUsername("Invalid username. Please enter another!")
+        if(this.state.username){
+          //valid session
+        }
+
+      }
     });
   }
 
