@@ -1,6 +1,6 @@
 # Pair programming exercise: React chat
 
-> A foreword to Windows users: please make sure you are using an LTS version of Node (the latest LTS release is 6.10.3). Verify that you are using the correct version with `node --version`.
+> A foreword to Windows users: please make sure you are using an LTS version of Node (the latest LTS release is 8.9.4). Verify that you are using the correct version with `node --version`.
 
 ## Goal
 
