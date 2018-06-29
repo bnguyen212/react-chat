@@ -100,7 +100,7 @@ class ChatRoom extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.roomName !== this.props.roomName) {
-      this.setState({messages: [{username: 'System', content: `${this.props.username} joined ${nextProps.roomName} room!`}]});
+      this.setState({message: '', typing: [], messages: [{username: 'System', content: `${this.props.username} joined ${nextProps.roomName} room!`}]});
     }
   }
 
