@@ -57,6 +57,7 @@ io.on('connection', socket => {
         username: 'System',
         content: `${socket.username} has left`
       });
+      socket.to(socket.room).emit('not typing', socket.username)
       socket.leave(socket.room);
     }
     socket.room = requestedRoom;
