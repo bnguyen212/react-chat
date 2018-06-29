@@ -52,7 +52,7 @@ class App extends React.Component {
           Choose Usename
         </button></div>)}
 
-        <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join} />
+        {this.state.username ? <ChatRoomSelector rooms={this.state.rooms} roomName={this.state.roomName} onSwitch={this.join} /> : null}
 
         {this.state.roomName && this.state.username ? <ChatRoom socket={this.state.socket} roomName={this.state.roomName} username={this.state.username} /> : ''}
       </div>
