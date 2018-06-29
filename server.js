@@ -34,7 +34,8 @@ app.get('/', (req, res) => {
 
 // Socket handler
 io.on('connection', socket => {
-  console.log('connected');
+  console.log('new user connected');
+
   socket.on('username', username => {
     if (!username || !username.trim()) {
       return socket.emit('errorMessage', 'No username!');
@@ -43,6 +44,8 @@ io.on('connection', socket => {
   });
 
   socket.on('room', requestedRoom => {
+    //console.log(requestedRoom);
+
     if (!socket.username) {
       return socket.emit('errorMessage', 'Username not set!');
     }
@@ -50,6 +53,10 @@ io.on('connection', socket => {
       return socket.emit('errorMessage', 'No room!');
     }
     if (socket.room) {
+      socket.to(socket.room).emit('message', {
+        username: 'System',
+        content: `${socket.username} has left`
+      });
       socket.leave(socket.room);
     }
     socket.room = requestedRoom;
@@ -69,6 +76,14 @@ io.on('connection', socket => {
       username: socket.username,
       content: message
     });
+  })
+
+  socket.on('typing', () => {
+    socket.to(socket.room).emit('typing', socket.username)
+  })
+
+  socket.on('not typing', () => {
+    socket.to(socket.room).emit('not typing', socket.username)
   })
 });
 

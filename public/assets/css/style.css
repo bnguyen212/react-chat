@@ -1,0 +1,45 @@
+.border {
+  border: solid 1px black;
+  padding-bottom: 20px;
+  bo
+}
+
+.msg-list {
+  min-height: 250px;
+  max-height: 250px;
+}
+
+.msg {
+  margin: 10px 10px;
+}
+
+.chat-title {
+  font-size: 30px;
+}
+
+.chat-input {
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-box {
+  margin-right: 30px;
+  padding: 10px 20px;
+}
+
+.chatroom {
+  margin: 30px 0;
+  max-width: 100%;
+}
+
+button {
+  margin: 0 10px;
+}
+
+div {
+  margin: 20px 0;
+}
+
+body {
+  padding: 0 30px;
+}
