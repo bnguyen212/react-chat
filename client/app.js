@@ -46,7 +46,7 @@ class App extends React.Component {
 
     return (
       <div>
-        <h1>Horizons React Chat</h1>
+        <h1>Brian's React Chat</h1>
 
         {this.state.username ? <div className="alert alert-success"><strong>Welcome, {this.state.username}!</strong></div> : (<div><button className="btn btn-warning" onClick={this.signup}>
           Choose Usename
