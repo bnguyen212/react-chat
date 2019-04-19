@@ -19,11 +19,9 @@ class App extends React.Component {
     // WebSockets Receiving Event Handlers
     this.state.socket.on('connect', () => {
       console.log('connected to server');
-      // YOUR CODE HERE (2)
     });
 
     this.state.socket.on('errorMessage', message => {
-      // YOUR CODE HERE (3)
       alert(message);
     });
   }
@@ -111,9 +109,8 @@ class ChatRoom extends React.Component {
     this.props.socket.emit('not typing');
     var newMessagesArr= this.state.messages.slice();
     newMessagesArr.push({username: this.props.username, content: this.state.message});
-    this.setState({messages: newMessagesArr}, ()=>{
-      this.setState({message: ''});
-  })}
+    this.setState({messages: newMessagesArr}, () => this.setState({message: ''}));
+  }
 
   handleChange(e) {
     if (e.target.value) {
@@ -131,7 +128,7 @@ class ChatRoom extends React.Component {
       str = this.state.typing[0] + ' is typing...'
     } else if (this.state.typing.length > 1) {
       for (var i = 0; i < this.state.typing.length; i++) {
-          str = str + this.state.typing[i] + ', '
+        str = str + this.state.typing[i] + ', '
       }
       str = str.slice(0, str.length-2) + ' are typing...'
     }
@@ -151,8 +148,7 @@ class ChatRoom extends React.Component {
           <input type="submit" value="Send" className="msg-btn btn btn-success" />
         </form>
       </div>
-      )
-
+    )
   }
 }
 
@@ -172,7 +168,7 @@ class ChatRoomSelector extends React.Component {
         }
       })}
       </ul>
-      )
+    )
   }
 }
 
